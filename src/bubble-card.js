@@ -1209,7 +1209,7 @@ class BubbleCard extends HTMLElement {
             const iconOpen = this.config.icon_open ? this.config.icon_open : 'mdi:window-shutter-open';
             const iconClosed = this.config.icon_close ? this.config.icon_close : 'mdi:window-shutter'
             const icon = hass.states[this.config.entity].state === 'open' ? iconOpen : iconClosed;
-            const name = !this.config.name ? hass.states[entityId].attributes.friendly_name || '' : this.config.name;
+            const name = !this.config.name ? hass.states[entity].attributes.friendly_name || '' : this.config.name;
             const openCover = !this.config.open_service ? 'cover.open_cover' : this.config.open_service;
             const closeCover = !this.config.close_service ? 'cover.close_cover' : this.config.close_service;
             const stopCover = !this.config.stop_service ? 'cover.stop_cover' : this.config.stop_service;
