@@ -1,1 +1,2001 @@
-const version="v0.0.1-beta.8";class BubbleCard extends HTMLElement{set hass(t){var e;function n(e){t.callService("homeassistant","toggle",{entity_id:e})}this.content||(this.attachShadow({mode:"open"}),this.shadowRoot.innerHTML='\n <ha-card style="background: none; border: none; box-shadow: none;">\n <div class="card-content" style="padding: 0;">\n </div>\n </ha-card>\n ',this.card=this.shadowRoot.querySelector("ha-card"),this.content=this.shadowRoot.querySelector("div")),e=this,"?edit=1"!==window.location.search?e.editor=!1:e.editor=!0;const i=t=>{fireEvent(window,"haptic",t)},o=(t,e,n=!1)=>{n?history.replaceState(null,"",e):history.pushState(null,"",e),fireEvent(window,"location-changed",{replace:n})},a=(t,e,a,r)=>{if(!r.confirmation||r.confirmation.exemptions&&r.confirmation.exemptions.some((t=>t.user===e.user.id))||(i("warning"),confirm(r.confirmation.text||`Are you sure you want to ${r.action}?`)))switch(r.action){case"more-info":(this.config.entity||this.config.camera_image)&&fireEvent(t,"hass-more-info",{entityId:this.config.entity?this.config.entity:this.config.camera_image});break;case"navigate":r.navigation_path&&o(0,r.navigation_path);break;case"url":r.url_path&&window.open(r.url_path);break;case"toggle":this.config.entity&&(n(this.config.entity),i("success"));break;case"call-service":{if(!r.service)return void i("failure");const[t,n]=r.service.split(".",2);e.callService(t,n,r.service_data,r.target),i("success");break}case"fire-dom-event":fireEvent(t,"ll-custom",r)}},r=(t,e,n,i)=>{let o;"double_tap"===i&&this.config.double_tap_action?o=this.config.double_tap_action:"hold"===i&&this.config.hold_action?o=this.config.hold_action:"tap"===i&&this.config.tap_action?o=this.config.tap_action:"double_tap"!==i||this.config.double_tap_action?("hold"!==i||this.config.hold_action)&&("tap"!==i||this.config.tap_action)||(o={action:"more-info"}):o={action:"toggle"},a(t,e,0,o)},s=function(){let e,n;return function(i,o,a,s){a.addEventListener(i,(()=>{const o=(new Date).getTime();"click"===i?o-(n||0)<250?(clearTimeout(e),r(s,t,0,"double_tap")):e=setTimeout((()=>{r(s,t,0,"tap")}),250):r(s,t,0,"hold"),n=o}))}}();function c(t,e){s("click","tap",e,t),s("contextmenu","hold",e,t)}const d=this.config.styles?this.config.styles:"";if("pop-up"!==this.config.card_type||this.getRootNode().host){if("pop-up"===this.config.card_type){this.popUp||(this.card.style.marginTop="0",this.popUp=this.getRootNode().querySelector("#root"));const l=this.config.hash,h=this.popUp,p=this.config.entity||"",u=this.config.icon||"",g=this.config.name||"",m=this.config.state_unit||"",f=this.config.state?t.states[this.config.state].state+m:"",b=this.config.margin_top_mobile&&"0"!==this.config.margin_top_mobile?this.config.margin_top_mobile:"0px",v=this.config.margin_top_desktop&&"0"!==this.config.margin_top_desktop?this.config.margin_top_desktop:"0px",_=this.config.width_desktop||"600px",y=this.config.is_sidebar_hidden||"false",x=_.match(/(\d+)(\D+)/),k=this.config.entity?"flex":"none";if(!this.headerAdded){const C=document.createElement("div");C.setAttribute("id","header-container");const E=document.createElement("div");C.appendChild(E);const L=document.createElement("ha-icon");L.setAttribute("class","header-icon"),L.setAttribute("icon",u),E.appendChild(L),c(this,L);const A=document.createElement("h2");A.textContent=g,E.appendChild(A);const S=document.createElement("p");S.textContent=f,E.appendChild(S);const T=document.createElement("ha-icon");T.setAttribute("class","power-button"),T.setAttribute("icon","mdi:power"),T.setAttribute("style",`display: ${k};`),E.appendChild(T);const z=document.createElement("button");z.setAttribute("class","close-pop-up"),z.setAttribute("onclick","history.replaceState(null, null, location.href.split('#')[0]);"),C.appendChild(z);const I=document.createElement("ha-icon");I.setAttribute("icon","mdi:close"),z.appendChild(I),this.content.appendChild(C),this.header=E,this.headerAdded=!0}if(this.headerAdded){const V=this.content.querySelector("#header-container .header-icon");V.setAttribute("icon",u),this.haIcon1=V;this.content.querySelector("#header-container h2").textContent=g;this.content.querySelector("#header-container p").textContent=f;this.content.querySelector("#header-container .power-button").setAttribute("style",`display: ${k};`)}if(!this.eventAdded){let H,M;["click","touchend","popstate"].forEach((t=>{window["checkHashRef_"+l]&&window.removeEventListener(t,window["checkHashRef_"+l]),window["checkHashRef_"+l]=w,window.addEventListener(t,window["checkHashRef_"+l])})),this.content.querySelector(".power-button").addEventListener("click",(()=>{n(p)})),document.addEventListener("mousedown",(function(t){location.hash!==l||t.composedPath().some((t=>"HA-MORE-INFO-DIALOG"===t.nodeName))||t.composedPath().some((t=>"root"===t.id&&!t.classList.contains("close-pop-up")))||history.replaceState(null,null,location.href.split("#")[0])})),window.addEventListener("keydown",(function(t){"Escape"===t.key&&history.replaceState(null,null,location.href.split("#")[0])})),h.addEventListener("touchstart",(function(t){H=t.touches[0].clientY,M=H})),h.addEventListener("touchmove",(function(t){t.touches[0].clientY-H>300&&t.touches[0].clientY>M&&history.replaceState(null,null,location.href.split("#")[0]),M=t.touches[0].clientY})),this.eventAdded=!0}if(""!==p){const Y=t.states[p].attributes.rgb_color,q=Y?`rgba(${Y[0]}, ${Y[1]}, ${Y[2]}, 0.5)`:"off"!==t.states[p].state?"var(--accent-color)":"var(--background-color,var(--secondary-background-color))";this.header.style.backgroundColor=q}function w(t){return new Promise(((t,e)=>{let n=0;const i=setInterval((()=>{n+=1,location.hash.split("?")[0]===l?(clearInterval(i),t(new Promise(((t,e)=>{h.classList.remove("close-pop-up"),h.classList.add("open-pop-up"),t()})))):h.classList.contains("open-pop-up")&&(clearInterval(i),t(new Promise(((t,e)=>{h.classList.remove("open-pop-up"),h.classList.add("close-pop-up"),t()})))),n>=10&&clearInterval(i)}),50)}))}w();const $=`\n ${d}\n #header-container {\n display: inline-flex;\n width: 100%;\n margin: 0;\n padding: 0;\n }\n #header-container > div {\n display: inline-flex;\n align-items: center;\n position: relative;\n padding: 6px;\n z-index: 2;\n flex-grow: 1;\n background-color: var(--background-color,var(--secondary-background-color));\n transition: background 1s;\n border-radius: 25px;\n margin-right: 14px;\n }\n .header-icon {\n display: inline-flex;\n width: 22px;\n height: 22px;\n padding: 8px;\n background-color: var(--card-background-color,var(--ha-card-background));\n border-radius: 100%;\n margin: 0 10px 0 0;\n cursor: ${this.config.entity||this.config.double_tap_action||this.config.tap_action||this.config.hold_action?"pointer":"default"}; \n }\n #header-container h2 {\n display: inline-flex;\n margin: 0 18px 0 0;\n /*line-height: 0px;*/\n z-index: 100;\n font-size: 20px;\n }\n #header-container p {\n display: inline-flex;\n line-height: 0px;\n font-size: 16px;\n }\n .power-button {\n cursor: pointer; \n flex-grow: inherit; \n width: 24px;\n height: 24px;\n border-radius: 12px;\n margin: 0 10px;\n background: none !important;\n justify-content: flex-end;\n background-color: var(--background-color,var(--secondary-background-color));\n }\n .close-pop-up {\n height: 50px;\n width: 50px;\n border: none;\n border-radius: 50%;\n z-index: 2;\n background: var(--background-color,var(--secondary-background-color));\n color: var(--primary-text-color);\n flex-shrink: 0;\n cursor: pointer;\n }\n `;if(this.styleAdded||!0===this.editor){if(!0===this.editor){const D=this.getRootNode().querySelector("#root").querySelector("style");D&&h.removeChild(D),h.style.backgroundColor="var(--ha-card-background,var(--card-background-color))",h.style.padding="16px",h.style.borderRadius="42px",h.style.gridGap="12px",h.style.gap="12px";const B=document.createElement("style");B.innerHTML=$,this.content.appendChild(B),this.styleAdded=!1}}else{const O=document.createElement("style"),X=document.createElement("style"),R=`\n ${d}\n ha-card {\n margin-top: 0 !important;\n background: none !important;\n border: none !important;\n }\n .card-content {\n width: 100% !important;\n padding: 0 !important;\n }\n #root {\n position: fixed !important;\n margin: 0 -7px;\n width: calc(100% - 38px);\n background-color: var(--ha-card-background,var(--card-background-color));\n border-radius: 42px;\n top: calc(100% + ${b} + 54px); /*136px*/\n grid-gap: 12px !important;\n gap: 12px !important;\n grid-auto-rows: min-content;\n padding: 18px 18px 220px 18px !important;\n height: calc(100% - 240px) !important;\n -ms-overflow-style: none; /* for Internet Explorer, Edge */\n scrollbar-width: none; /* for Firefox */\n overflow-y: auto; \n overflow-x: hidden; \n z-index: 1 !important; /* Higher value hide the more-info panel */\n /* For older Safari but not working with Firefox */\n /* display: grid !important; */ \n }\n #root > bubble-card:first-child::after {\n content: '';\n display: block;\n position: sticky;\n top: 0;\n left: -50px;\n margin: -70px 0 -35px 0;\n width: 200%;\n height: 100px;\n background: linear-gradient(0deg, rgba(79, 69, 87, 0) 0%, var(--ha-card-background,var(--card-background-color)) 80%);\n z-index: 0;\n }\n #root::-webkit-scrollbar {\n display: none; /* for Chrome, Safari, and Opera */\n }\n #root > bubble-card:first-child {\n position: sticky;\n top: 0;\n z-index: 5;\n background: none !important;\n }\n #root.open-pop-up {\n transform: translateY(-100%);\n transition: transform .4s !important;\n }\n #root.open-pop-up > * {\n /* Block child items to overflow and if they do clip them */\n /*max-width: calc(100vw - 38px);*/\n max-width: 100% !important;\n overflow-x: clip;\n }\n #root.close-pop-up { \n transform: translateY(0%);\n transition: transform .4s !important;\n /* animation: hide 1s forwards; */\n }\n @media only screen and (min-width: 768px) {\n #root {\n top: calc(100% + ${v} + 54px);\n width: calc(${_} - 36px) !important;\n left: calc(50% - ${x[1]/2}${x[2]});\n margin: 0 !important;\n }\n } \n @media only screen and (min-width: 870px) {\n #root {\n top: calc(100% + ${v} + 54px);\n width: calc(${_} - ${!0===y?"0px":"92px"}) !important; \n left: calc(50% - ${x[1]/2}${x[2]} + ${!0===y?"0px":"56px"});\n margin: 0 !important;\n }\n } \n `;O.innerHTML=R,X.innerHTML=$,h.appendChild(O),this.content.appendChild(X),this.styleAdded=!0}}}else!0!==this.editor&&(this.card.style.marginTop="2000px");if("horizontal-buttons-stack"===this.config.card_type){const W=(t,e,n)=>{const i=document.createElement("button");return i.onclick=function(){o(0,e)},i.setAttribute("class","button"),i.innerHTML=`\n ${""!==n?`<ha-icon icon="${n}" class="icon" style="${""!==t?"margin-right: 8px;":""}"></ha-icon>`:""}\n ${""!==t?`<p class="name">${t}</p>`:""}\n `,i},F=(e,n)=>{if(t.states[n].attributes.rgb_color){const i=t.states[n].attributes.rgb_color,o=`rgba(${i[0]}, ${i[1]}, ${i[2]}, 0.5)`;e.style.backgroundColor=o,e.style.border="1px solid rgba(0,0,0,0)"}else t.states[n].attributes.rgb_color||"on"!=t.states[n].state?(e.style.backgroundColor="rgba(0,0,0,0)",e.style.border="1px solid var(--primary-text-color)"):(e.style.backgroundColor="rgba(255,255,255,0.5)",e.style.border="1px solid rgba(0,0,0,0)")};if(!this.buttonsAdded){const j=document.createElement("div");j.setAttribute("class","horizontal-buttons-stack-container"),this.content.appendChild(j)}if((()=>{let e=[],n=1;for(;this.config[n+"_link"];){const t=n+"_",i=this.config[t+"name"]||"",o=this.config[t+"pir_sensor"],a=this.config[t+"icon"]||"",r=this.config[t+"link"],s=this.config[t+"entity"];e.push({button:i,pirSensor:o,icon:a,link:r,lightEntity:s}),n++}if(this.config.auto_order&&e.sort(((e,n)=>{if(e.pirSensor&&n.pirSensor){if("on"===t.states[e.pirSensor].state&&"on"===t.states[n.pirSensor].state){return t.states[e.pirSensor].last_updated<t.states[n.pirSensor].last_updated?1:-1}if("on"===t.states[e.pirSensor].state)return-1;if("on"===t.states[n.pirSensor].state)return 1;return t.states[e.pirSensor].last_updated<t.states[n.pirSensor].last_updated?1:-1}return e.pirSensor?n.pirSensor?void 0:-1:1})),!this.buttonsAdded){const t=this.content.querySelector(".horizontal-buttons-stack-container"),n={};e.forEach((e=>{const i=W(e.button,e.link,e.icon);n[e.link]=i,t.appendChild(i)})),this.buttonsAdded=!0,this.buttons=n}let i=0;e.forEach(((t,e)=>{let n=this.buttons[t.link];if(n){let e=localStorage.getItem(`buttonWidth-${t.link}`),o=localStorage.getItem(`buttonContent-${t.link}`);e&&"0"!==e&&o===n.innerHTML&&!0!==this.editor||(e=n.offsetWidth,localStorage.setItem(`buttonWidth-${t.link}`,e),localStorage.setItem(`buttonContent-${t.link}`,n.innerHTML)),n.style.transform=`translateX(${i}px)`,i+=parseInt(e)+12}t.lightEntity&&F(n,t.lightEntity)}))})(),!this.styleAdded){const N=document.createElement("style"),P=`\n ${d}\n .horizontal-buttons-stack {\n width: 100%;\n margin-top: 0 !important;\n background: none !important;\n position: fixed;\n height: 51px;\n bottom: 16px;\n /* transform: translateY(200px); */\n /* animation: from-bottom 1.3s forwards; */\n z-index: 1 !important; /* Higher value hide the more-info panel */\n }\n @keyframes from-bottom {\n 0% {transform: translateY(200px);}\n 20% {transform: translateY(200px);}\n 46% {transform: translateY(-8px);}\n 56% {transform: translateY(1px);}\n 62% {transform: translateY(-2px);}\n 70% {transform: translateY(0);}\n 100% {transform: translateY(0);}\n }\n .horizontal-buttons-stack-container {\n width: max-content;\n position: relative;\n height: 51px;\n }\n .button {\n display: flex;\n position: absolute;\n box-sizing: border-box;\n border: 1px solid var(--primary-text-color);\n align-items: center;\n height: 50px;\n white-space: nowrap;\n width: auto;\n border-radius: 25px;\n z-index: 2;\n padding: 16px;\n background: none;\n transition: background-color 1s, border 1s, transform 1s;\n color: var(--primary-text-color);\n }\n .icon {\n height: 24px;\n }\n .card-content {\n width: 100%;\n box-sizing: border-box;\n margin: 0 -36px !important;\n padding: 0 36px !important;\n overflow: scroll !important;\n -ms-overflow-style: none;\n scrollbar-width: none;\n mask-image: linear-gradient(90deg, transparent 2%, rgba(0, 0, 0, 1) 6%, rgba(0, 0, 0, 1) 96%, transparent 100%);\n -webkit-mask-image: linear-gradient(90deg, transparent 2%, rgba(0, 0, 0, 1) 6%, rgba(0, 0, 0, 1) 96%, transparent 100%);\n }\n .horizontal-buttons-stack::before {\n content: '';\n position: absolute;\n top: -32px;\n left: -100%;\n display: block;\n background: linear-gradient(0deg, var(--background-color, var(--primary-background-color)) 50%, rgba(79, 69, 87, 0));\n width: 200%;\n height: 100px;\n }\n .card-content::-webkit-scrollbar {\n display: none;\n }\n @media only screen and (min-width: 768px) {\n .card-content {\n position: fixed;\n width: 538px !important;\n left: calc(50% - 246px);\n padding: 0 26px !important;\n }\n }\n @media only screen and (min-width: 870px) {\n .card-content {\n position: fixed;\n width: 538px !important;\n left: calc(50% - 218px);\n padding: 0 26px !important;\n }\n }\n `;N.innerHTML=P,this.card.classList.add("horizontal-buttons-stack"),this.content.querySelector(".horizontal-buttons-stack-container").appendChild(N),this.styleAdded=!0}if(!0===this.editor){if(!this.editorStyleAdded){const U=document.createElement("style"),G=`\n ${d}\n .horizontal-buttons-stack {\n position: relative;\n height: 51px;\n bottom: 0px;\n overflow: hidden;\n }\n .horizontal-buttons-stack::before {\n top: -32px;\n left: -100%;\n background: none;\n width: 100%;\n height: 0;\n }\n .card-content {\n position: relative;\n mask-image: linear-gradient(90deg, transparent 2%, rgba(0, 0, 0, 1) 6%, rgba(0, 0, 0, 1) 96%, transparent 100%);\n -webkit-mask-image: linear-gradient(90deg, transparent 2%, rgba(0, 0, 0, 1) 6%, rgba(0, 0, 0, 1) 96%, transparent 100%);\n }\n @media only screen and (min-width: 870px) {\n .card-content {\n left: calc(50% - 230px);\n }\n }\n `;U.innerHTML=G,this.card.appendChild(U),this.editorStyleAdded=!0}}else if(this.card.querySelector("ha-card > style")){const J=this.card.querySelector("ha-card > style");this.card.removeChild(J)}}if("button"===this.config.card_type){if(!this.buttonAdded){const Ct=document.createElement("div");Ct.setAttribute("class","button-container"),this.content.appendChild(Ct)}const Z=this.config.entity,K=this.config.icon?this.config.icon:t.states[Z].attributes.icon||t.states[Z].attributes.entity_picture||"",Q=this.config.name?this.config.name:t.states[Z].attributes.friendly_name||"",tt=this.config.button_type||"switch",et=Z?t.states[Z].state:"";let nt=Z?t.states[Z].attributes.brightness||0:"",it=Z?t.states[Z].attributes.volume_level||0:"",ot=!1,at=nt,rt=it,st=0,ct=0,dt=0,lt=!1,ht=null;const pt=document.createElement("div");pt.setAttribute("class","icon-container"),this.iconContainer=pt;const ut=document.createElement("div");ut.setAttribute("class","nameContainer");const gt=document.createElement("div");gt.setAttribute("class","switch-button");const mt=document.createElement("div");mt.setAttribute("class","range-slider");const ft=document.createElement("div");function bt(t){let e=t.querySelector(".feedback-element");e||(e=document.createElement("div"),e.setAttribute("class","feedback-element"),t.appendChild(e)),e.style.animation="tap-feedback .5s",setTimeout((()=>{e.style.animation="none",t.removeChild(e)}),500)}function vt(t){st=t.pageX||(t.touches?t.touches[0].pageX:0),ct=t.pageY||(t.touches?t.touches[0].pageY:0),dt=mt.value,t.target!==pt.querySelector("ha-icon")&&(ot=!0,document.addEventListener("mouseup",yt),document.addEventListener("touchend",yt),document.addEventListener("mousemove",_t),document.addEventListener("touchmove",_t),ht=setTimeout((()=>{$t(t.pageX||t.touches[0].pageX),xt(),ht=null}),200))}function _t(t){const e=t.pageX||(t.touches?t.touches[0].pageX:0),n=t.pageY||(t.touches?t.touches[0].pageY:0);Math.abs(n-ct)>Math.abs(e-st)?(clearTimeout(ht),yt()):(document.removeEventListener("mousemove",_t),document.removeEventListener("touchmove",_t),document.addEventListener("mousemove",kt),document.addEventListener("touchmove",kt))}function yt(){ot=!1,lt=!1,xt(),document.removeEventListener("mouseup",yt),document.removeEventListener("touchend",yt),document.removeEventListener("mousemove",kt),document.removeEventListener("touchmove",kt)}function xt(){Z.startsWith("light.")?(nt=at,t.callService("light","turn_on",{entity_id:Z,brightness:nt})):it!==rt&&Z.startsWith("media_player.")&&(it=rt,t.callService("media_player","volume_set",{entity_id:Z,volume_level:it}))}function kt(t){const e=t.pageX||(t.touches?t.touches[0].pageX:0),n=t.pageY||(t.touches?t.touches[0].pageY:0);ot&&Math.abs(e-st)>10?$t(e):ot&&Math.abs(n-ct)>10&&(ot=!1,mt.value=dt)}function wt(t,e){if(e.buttonContainer.style.opacity="unavailable"!==t?"1":"0.5",["switch","custom"].includes(tt)){const n=["on","open","cleaning","true","home","playing"].includes(t)?"var(--accent-color)":"rgba(0,0,0,0)";e.switchButton.style.backgroundColor=n}}function $t(t){const e=mt.getBoundingClientRect(),n=Math.min(Math.max(t-e.left,0),e.width)/e.width;Z.startsWith("light.")?at=Math.round(255*n):Z.startsWith("media_player.")&&(rt=n),ft.style.transition="none",ft.style.transform=`translateX(${100*n}%)`}if(ft.setAttribute("class","range-fill"),Z&&Z.startsWith("light.")&&"slider"===tt?ft.style.transform=`translateX(${nt/255*100}%)`:Z&&Z.startsWith("media_player.")&&"slider"===tt&&(ft.style.transform=`translateX(${100*it}%)`),this.buttonContainer||(this.buttonContainer=this.content.querySelector(".button-container"),"slider"!==tt||this.buttonAdded?"switch"!==tt&&"custom"!==tt||(this.buttonContainer.appendChild(gt),gt.appendChild(pt),gt.appendChild(ut),this.switchButton=this.content.querySelector(".switch-button")):(this.buttonContainer.appendChild(mt),mt.appendChild(pt),mt.appendChild(ut),mt.appendChild(ft),this.rangeFill=this.content.querySelector(".range-fill")),t.states[Z].attributes.entity_picture||K.startsWith("/api/image/")?pt.innerHTML=`<img class="entity-picture" src="${K}" alt="Icon" />`:pt.innerHTML=`<ha-icon icon="${K}" class="icon"></ha-icon>`,ut.innerHTML=`<p>${Q}</p>`,this.buttonAdded=!0),this.eventAdded||"switch"!==tt?this.eventAdded||"slider"!==tt?this.eventAdded||"custom"!==tt||(gt.addEventListener("click",(()=>bt(this.switchButton))),c(this,this.switchButton),this.eventAdded=!0):(mt.addEventListener("mousedown",vt),mt.addEventListener("touchstart",vt),c(this,this.iconContainer),this.eventAdded=!0):(gt.addEventListener("click",(()=>bt(this.switchButton))),gt.addEventListener("click",(function(t){t.target.closest("ha-icon")||n(Z)})),c(this,this.iconContainer),this.eventAdded=!0),this.isDragging||"slider"!==tt||(this.rangeFill.style.transition="all .2s",Z.startsWith("light.")?this.rangeFill.style.transform=`translateX(${nt/255*100}%)`:Z.startsWith("media_player.")&&(this.rangeFill.style.transform=`translateX(${100*it}%)`)),wt(et,this),"slider"===tt){const Et=t.states[Z].attributes.rgb_color,Lt=Et?`rgba(${Et[0]}, ${Et[1]}, ${Et[2]}, 0.5)`:"rgba(255, 255, 255, 0.5)";ft.style.backgroundColor=Lt,this.rangeFill.style.backgroundColor=Lt}if(!this.styleAdded){const At=document.createElement("style"),St=`\n ${d}\n ha-card {\n margin-top: 0 !important;\n background: none !important;\n }\n \n .button-container {\n position: relative;\n width: 100%;\n height: 50px;\n z-index: 0;\n background-color: var(--background-color-2,var(--secondary-background-color));\n border-radius: 25px;\n mask-image: radial-gradient(white, black);\n -webkit-mask-image: radial-gradient(white, black);\n -webkit-backface-visibility: hidden;\n -moz-backface-visibility: hidden;\n -webkit-transform: translateZ(0);\n overflow: hidden;\n }\n \n .switch-button,\n .range-slider {\n display: inline-flex;\n position: absolute;\n height: 100%;\n width: 100%;\n transition: background-color 1.5s;\n }\n \n .range-fill {\n position: absolute;\n top: 0;\n bottom: 0;\n left: 0;\n }\n \n .switch-button {\n cursor: pointer !important;\n }\n \n .range-slider {\n cursor: ew-resize;\n }\n \n .range-fill {\n z-index: 1;\n width: 100%;\n left: -100%;\n }\n \n .icon-container {\n position: absolute;\n z-index: 2;\n width: 38px;\n height: 38px;\n margin: 6px;\n border-radius: 50%;\n background-color: var(--card-background-color,var(--ha-card-background));\n cursor: pointer !important;\n }\n \n ha-icon {\n display: flex;\n position: absolute;\n margin: inherit;\n padding: 1px 2px;\n width: 22px; \n height: 22px;\n }\n \n .entity-picture {\n height: inherit;\n border-radius: 100%;\n }\n \n .nameContainer {\n position: relative;\n display: inline-flex;\n margin-left: 58px;\n z-index: 2;\n font-weight: 600;\n align-items: center;\n }\n \n .nameContainer p {\n display: inline-flex;\n }\n \n .feedback-element {\n position: absolute;\n top: 0;\n left: 0;\n opacity: 0;\n width: 100%;\n height: 100%;\n background-color: rgb(0,0,0);\n }\n \n @keyframes tap-feedback {\n 0% {transform: translateX(-100%); opacity: 0;}\n 64% {transform: translateX(0); opacity: 0.1;}\n 100% {transform: translateX(100%); opacity: 0;}\n }\n `;At.innerHTML=St,this.content.appendChild(At),this.styleAdded=!0}}if("separator"===this.config.card_type){const Tt=this.config.icon?this.config.icon:"",zt=this.config.name?this.config.name:"";if(!this.separatorAdded){const It=document.createElement("div");if(It.setAttribute("class","separator-container"),It.innerHTML=`\n <div>\n <ha-icon icon="${Tt}"></ha-icon>\n <h4>${zt}</h4>\n </div>\n <div></div>\n `,this.content.appendChild(It),this.separatorAdded=!0,!this.styleAdded){const Vt=document.createElement("style"),Ht=`\n ${d}\n .separator-container {\n display: inline-flex;\n width: 100%;\n }\n .separator-container div:first-child {\n display: inline-flex;\n max-width: calc(100% - 38px);\n }\n .separator-container div ha-icon{\n display: inline-flex;\n height: 24px;\n width: 24px;\n margin: 0 20px 0 8px;\n transform: translateY(-2px);\n }\n .separator-container div h4{\n display: inline-flex;\n margin: 0 20px 0 0;\n font-size: 17px;\n white-space: nowrap;\n overflow: hidden;\n text-overflow: ellipsis;\n }\n .separator-container div:last-child{\n display: inline-flex; \n border-radius: 6px; \n opacity: 0.3; \n margin-left: 10px; \n flex-grow: 1; \n height: 6px; \n align-self: center; \n background-color: var(--background-color,var(--secondary-background-color));\n `;Vt.innerHTML=Ht,this.content.appendChild(Vt),this.styleAdded=!0}}}if("cover"===this.config.card_type){const Mt=this.config.entity,Yt=this.config.icon_open?this.config.icon_open:"mdi:window-shutter-open",qt=this.config.icon_close?this.config.icon_close:"mdi:window-shutter",Dt="open"===t.states[this.config.entity].state?Yt:qt,Bt=this.config.name?this.config.name:t.states[entityId].attributes.friendly_name||"",Ot=this.config.open_service?this.config.open_service:"cover.open_cover",Xt=this.config.close_service?this.config.close_service:"cover.close_cover",Rt=this.config.stop_service?this.config.stop_service:"cover.stop_cover";if(!this.coverAdded){const Wt=document.createElement("div");Wt.setAttribute("class","cover-container"),Wt.innerHTML=`\n <div class="header-container">\n <div class="icon-container">\n </div>\n <p class="name">${Bt}</p>\n </div>\n <div class="buttons-container">\n <button class="button open">\n <ha-icon icon="mdi:arrow-up"></ha-icon>\n </button>\n <button class="button stop">\n <ha-icon icon="mdi:stop"></ha-icon>\n </button>\n <button class="button close">\n <ha-icon icon="mdi:arrow-down"></ha-icon>\n </button>\n </div>\n `,this.content.appendChild(Wt);const Ft=Wt.querySelector(".open"),jt=Wt.querySelector(".stop"),Nt=Wt.querySelector(".close");Ft.addEventListener("click",(()=>{t.callService(Ot.split(".")[0],Ot.split(".")[1],{entity_id:Mt})})),jt.addEventListener("click",(()=>{t.callService(Rt.split(".")[0],Rt.split(".")[1],{entity_id:Mt})})),Nt.addEventListener("click",(()=>{t.callService(Xt.split(".")[0],Xt.split(".")[1],{entity_id:Mt})}));c(this,this.content.querySelector(".icon-container")),this.coverAdded=!0}if(this.content.querySelector(".icon-container").innerHTML=`<ha-icon icon="${Dt}" class="icon"></ha-icon>`,!this.styleAdded){const Pt=document.createElement("style"),Ut=`\n ${d}\n ha-card {\n margin-top: 0 !important;\n background: none !important;\n }\n \n .header-container {\n display: flex;\n align-items: center;\n margin-bottom: 10px;\n }\n \n .name {\n display: inline-block; \n margin-left: 10px;\n font-weight: 600;\n }\n \n .cover-container {\n display: grid;\n }\n \n .icon-container {\n display: flex;\n margin: 0 !important;\n align-items: center;\n justify-content: center;\n cursor: pointer;\n z-index: 2;\n width: 48px;\n height: 48px;\n margin: 6px;\n border-radius: 50%;\n background-color: var(--card-background-color,var(--ha-card-background));\n border: 6px solid var(--background-color-2,var(--secondary-background-color));\n box-sizing: border-box;\n }\n \n .buttons-container {\n display: grid;\n align-self: center;\n grid-auto-flow: column;\n grid-gap: 18px; \n }\n \n ha-icon {\n display: flex; \n height: 24px; \n width: 24px; \n color: var(--primary-text-color);\n }\n \n .button {\n display: flex;\n background: var(--background-color-2,var(--secondary-background-color));\n height: 42px;\n border-radius: 32px;\n align-items: center;\n justify-content: center;\n cursor: pointer;\n border: none;\n }\n `;Pt.innerHTML=Ut,this.content.appendChild(Pt),this.styleAdded=!0}}if("empty-column"===this.config.card_type&&!this.emptyCollumnAdded){const Gt=document.createElement("div");Gt.setAttribute("class","empty-column"),Gt.innerHTML='\n <div style="display: flex; width: 100%;">\n </div>\n ',this.content.appendChild(Gt),this.emptyColumnAdded=!0}}setConfig(t){if("pop-up"===t.card_type){if(!t.hash)throw new Error("You need to define an hash");if(!t.icon)throw new Error("You need to define an icon");if(!t.name)throw new Error("You need to define a name")}else if("horizontal-buttons-stack"===t.card_type){var e={};for(var n in t)if(n.match(/^\d+_icon$/)){var i=n.replace("_icon","_link");if(void 0===t[i])throw new Error("You need to define "+i);if(e[t[i]])throw new Error("You can't use "+t[i]+" twice");e[t[i]]=!0}}else if(("button"===t.card_type||"cover"===t.card_type)&&!t.entity)throw new Error("You need to define an entity");this.config=t}getCardSize(){return 1}static getConfigElement(){return document.createElement("bubble-card-editor")}}customElements.define("bubble-card",BubbleCard);const fireEvent=(t,e,n,i)=>{i=i||{},n=null==n?{}:n;const o=new Event(e,{bubbles:void 0===i.bubbles||i.bubbles,cancelable:Boolean(i.cancelable),composed:void 0===i.composed||i.composed});return o.detail=n,t.dispatchEvent(o),o};customElements.get("ha-switch");const LitElement=Object.getPrototypeOf(customElements.get("ha-panel-lovelace")),html=LitElement.prototype.html,css=LitElement.prototype.css;class BubbleCardEditor extends LitElement{setConfig(t){this._config={...t}}static get properties(){return{hass:{},_config:{}}}get _card_type(){return this._config.card_type||""}get _button_type(){return this._config.button_type||"switch"}get _entity(){return this._config.entity||""}get _name(){return this._config.name||""}get _icon(){return this._config.icon||""}get _state(){return this._config.state||""}get _state_unit(){return this._config.state_unit||""}get _hash(){return this._config.hash||"#pop-up-name"}get _margin_top_mobile(){return this._config.margin_top_mobile||"0px"}get _margin_top_desktop(){return this._config.margin_top_desktop||"0px"}get _width_desktop(){return this._config.width_desktop||"600px"}get _is_sidebar_hidden(){return this._config.is_sidebar_hidden||!1}get _icon_open(){return this._config.icon_open||""}get _icon_close(){return this._config.icon_close||""}get _open_service(){return this._config.open_service||"cover.open_cover"}get _close_service(){return this._config.open_service||"cover.close_cover"}get _stop_service(){return this._config.open_service||"cover.stop_cover"}get _auto_order(){return this._config.auto_order||!1}render(){if(!this.hass)return html``;if(!this.listsUpdated){const t=t=>({label:t,value:t});this.allEntitiesList=Object.keys(this.hass.states).map(t),this.lightList=Object.keys(this.hass.states).filter((t=>"light"===t.substr(0,t.indexOf(".")))).map(t),this.sensorList=Object.keys(this.hass.states).filter((t=>"sensor"===t.substr(0,t.indexOf(".")))).map(t),this.binarySensorList=Object.keys(this.hass.states).filter((t=>"binary_sensor"===t.substr(0,t.indexOf(".")))).map(t),this.coverList=Object.keys(this.hass.states).filter((t=>"cover"===t.substr(0,t.indexOf(".")))).map(t),this.cardTypeList=[{label:"Button",value:"button"},{label:"Cover",value:"cover"},{label:"Empty column",value:"empty-column"},{label:"Horizontal buttons stack",value:"horizontal-buttons-stack"},{label:"Pop-up",value:"pop-up"},{label:"Separator",value:"separator"}],this.buttonTypeList=[{label:"Switch",value:"switch"},{label:"Slider",value:"slider"}],this.listsUpdated=!0}const t=this.allEntitiesList,e=(this.lightList,this.sensorList,this.coverList),n=this.cardTypeList,i=this.buttonTypeList;if("pop-up"===this._config.card_type)return html` <div class="card-config"> ${this.makeDropdown("Card type","card_type",n)} <ha-alert alert-type="info">This card allows you to convert any vertical-stack into a pop-up. Each pop-up can be opened by targeting its link (e.g. '#pop-up-name'), with navigation_path or with the horizontal buttons stack that is included.<br><br>It must be placed within a vertical-stack card at the top most position to function properly.</ha-alert> <ha-textfield label="Hash (e.g. #kitchen)" .value="${this._hash}" .configValue="${"hash"}" @input="${this._valueChanged}" style="width: 100%;" ></ha-textfield> <ha-textfield label="Name" .value="${this._name}" .configValue="${"name"}" @input="${this._valueChanged}" style="width: 100%;" ></ha-textfield> ${this.makeDropdown("Icon","icon")} ${this.makeDropdown("Entity to toggle (e.g. room light group)","entity",t)} ${this.makeDropdown("Entity state to display (e.g. room temperature)","state",t)} <ha-textfield label="Unit of measurement (e.g. °F, °C, %)" .value="${this._state_unit}" .configValue="${"state_unit"}" @input="${this._valueChanged}" style="width: 100%;" ></ha-textfield> <ha-textfield label="Width on desktop (100% by default on mobile)" .value="${this._width_desktop}" .configValue="${"width_desktop"}" @input="${this._valueChanged}" style="width: 100%;" ></ha-textfield> <ha-formfield .label="Is the sidebar hidden on desktop?"> <ha-switch aria-label="Is the sidebar hidden on desktop?" .checked=${this._is_sidebar_hidden} .configValue="${"is_sidebar_hidden"}" @change=${this._valueChanged} ></ha-switch> <div class="mdc-form-field"> <label class="mdc-label">Is the sidebar hidden on desktop?</label> </div> </ha-formfield> <ha-textfield label="Top margin on mobile (e.g. -56px if your header is hidden)" .value="${this._margin_top_mobile}" .configValue="${"margin_top_mobile"}" @input="${this._valueChanged}" style="width: 100%;" ></ha-textfield> <ha-textfield label="Top margin on desktop (e.g. 50% for an half sized pop-up)" .value="${this._margin_top_desktop}" .configValue="${"margin_top_desktop"}" @input="${this._valueChanged}" style="width: 100%;" ></ha-textfield> ${this.makeVersion()} </div> `;if("button"===this._config.card_type)return html` <div class="card-config"> ${this.makeDropdown("Card type","card_type",n)} <ha-alert alert-type="info">This card can be a slider or a button, allowing you to toggle your entities, control the brightness of your lights and the volume of your media players. To access color / control of an entity, simply tap on the icon.</ha-alert> ${this.makeDropdown("slider"!==this._button_type?"Entity (toggle)":"Entity (light or media_player)","entity",t)} ${this.makeDropdown("Button type","button_type",i)} <ha-textfield label="Name" .value="${this._name}" .configValue="${"name"}" @input="${this._valueChanged}" style="width: 100%;" ></ha-textfield> ${this.makeDropdown("Icon","icon")} ${this.makeVersion()} </div> `;if("separator"===this._config.card_type)return html` <div class="card-config"> ${this.makeDropdown("Card type","card_type",n)} <ha-alert alert-type="info">This card is a simple separator for dividing your pop-up into categories / sections. e.g. Lights, Devices, Covers, Settings, Automations...</ha-alert> <ha-textfield label="Name" .value="${this._name}" .configValue="${"name"}" @input="${this._valueChanged}" style="width: 100%;" ></ha-textfield> ${this.makeDropdown("Icon","icon")} ${this.makeVersion()} </div> `;if("horizontal-buttons-stack"===this._config.card_type){if(!this.buttonAdded&&this.shadowRoot.querySelector("#add-button")){const t=this.shadowRoot.querySelector("#add-button");for(this.buttonIndex=0;this._config[this.buttonIndex+1+"_link"];)this.buttonIndex++;t.addEventListener("click",(()=>{this.buttonIndex++,fireEvent(this,"config-changed",{config:this._config})})),this.buttonAdded=!0}return fireEvent(this,"config-changed",{config:this._config}),html` <div class="card-config"> ${this.makeDropdown("Card type","card_type",n)} <ha-alert alert-type="info">This card is the companion to the pop-up card, allowing you to open the corresponding pop-ups. It also allows you to open any page of your dashboard. In addition, you can add your motion sensors so that the order of the buttons adapts according to the room you just entered. This card is scrollable, remains visible and acts as a footer.<br><br>Please note that this card may take some time to load in edit mode.</ha-alert> <ha-formfield .label="Auto order"> <ha-switch aria-label="Toggle auto order" .checked=${this._auto_order} .value=${this._auto_order}" .configValue="${"auto_order"}" @change=${this._valueChanged} ></ha-switch> <div class="mdc-form-field"> <label class="mdc-label">Auto order (Presence/occupancy sensors needed)</label> </div> </ha-formfield> <div id="buttons-container"> ${this.makeButton()} </div> <button id="add-button">Add Button</button> ${this.makeVersion()} </div> `}return"cover"===this._config.card_type?html` <div class="card-config"> ${this.makeDropdown("Card type","card_type",n)} <ha-alert alert-type="info">This card allows you to control your covers.</ha-alert> ${this.makeDropdown("Entity","entity",e)} <ha-textfield label="Name" .value="${this._name||""}" .configValue="${"name"}" @input="${this._valueChanged}" style="width: 100%;" ></ha-textfield> <ha-textfield label="Open service (cover.open_cover by default)" .value="${this._open_service}" .configValue="${"open_service"}" @input="${this._valueChanged}" style="width: 100%;" ></ha-textfield> <ha-textfield label="Stop service (cover.stop_cover by default)" .value="${this._stop_service}" .configValue="${"stop_service"}" @input="${this._valueChanged}" style="width: 100%;" ></ha-textfield> <ha-textfield label="Close service (cover.close_cover by default)" .value="${this._close_service}" .configValue="${"close_service"}" @input="${this._valueChanged}" style="width: 100%;" ></ha-textfield> ${this.makeDropdown("Open icon","icon_open")} ${this.makeDropdown("Closed icon","icon_close")} ${this.makeVersion()} </div> `:"empty-column"===this._config.card_type?html` <div class="card-config"> ${this.makeDropdown("Card type","card_type",n)} <ha-alert alert-type="info">Just an empty card to fill any empty column.</ha-alert> ${this.makeVersion()} </div> `:this._config.card_type?void 0:html` <div class="card-config"> ${this.makeDropdown("Card type","card_type",n)} <ha-alert alert-type="info">You need to add a card type first.</ha-alert> ${this.makeVersion()} </div> `}makeDropdown(t,e,n){this.hass;return"Icon"===t||"Open icon"===t||"Closed icon"===t?html` <div> <ha-icon-picker label="${t}" .value="${this["_"+e]}" .configValue="${e}" item-label-path="label" item-value-path="value" @value-changed="${this._valueChanged}" ></ha-icon-picker> </div> `:html` <div> <ha-combo-box label="${t}" .value="${this["_"+e]}" .configValue="${e}" .items="${n}" @value-changed="${this._valueChanged}" ></ha-combo-box> </div> `}makeButton(){let t=[];for(let e=1;e<=this.buttonIndex;e++)t.push(html` <div class="${e}_button"> <div class="button-header"> <ha-icon class="remove-button" icon="mdi:close" @click=${()=>this.removeButton(e)}></ha-icon> <span class="button-number">Button ${e}</span> </div> <ha-textfield label="Name" .value="${this._config[e+"_name"]}" .configValue="${e}_name" @input="${this._valueChanged}" style="width: 100%;" ></ha-textfield> <ha-icon-picker label="Icon" .value="${this._config[e+"_icon"]}" .configValue="${e}_icon" item-label-path="label" item-value-path="value" @value-changed="${this._valueChanged}" ></ha-icon-picker> <ha-textfield label="Link / Hash to pop-up (e.g. #kitchen)" .value="${this._config[e+"_link"]||""}" .configValue="${e}_link" @input="${this._valueChanged}" style="width: 100%;" ></ha-textfield> <ha-combo-box label="Light / Light group (For background color)" .value="${this._config[e+"_entity"]}" .configValue="${e}_entity" .items="${this.allEntitiesList}" @value-changed="${this._valueChanged}" ></ha-combo-box> <ha-combo-box label="Presence / Occupancy sensor (For button auto order)" .value="${this._config[e+"_pir_sensor"]}" .configValue="${e}_pir_sensor" .disabled=${!this._config.auto_order} .items="${this.binarySensorList}" @value-changed="${this._valueChanged}" ></ha-combo-box> </div> `);return fireEvent(this,"config-changed",{config:this._config}),t}makeVersion(){return html` <h4>Bubble Card <span style="font-size: 10px;">${version}</span></h4> `}removeButton(t){delete this._config[t+"_name"],delete this._config[t+"_icon"],delete this._config[t+"_link"],delete this._config[t+"_entity"],delete this._config[t+"_pir_sensor"];for(let e=t;e<this.buttonIndex;e++)this._config[e+"_name"]=this._config[e+1+"_name"],this._config[e+"_icon"]=this._config[e+1+"_icon"],this._config[e+"_link"]=this._config[e+1+"_link"],this._config[e+"_entity"]=this._config[e+1+"_entity"],this._config[e+"_pir_sensor"]=this._config[e+1+"_pir_sensor"];delete this._config[this.buttonIndex+"_name"],delete this._config[this.buttonIndex+"_icon"],delete this._config[this.buttonIndex+"_link"],delete this._config[this.buttonIndex+"_entity"],delete this._config[this.buttonIndex+"_pir_sensor"],this.buttonIndex--,fireEvent(this,"config-changed",{config:this._config})}_valueChanged(t){if(!this._config||!this.hass)return;const e=t.target,n=t.detail;e.configValue&&(this._config={...this._config,[e.configValue]:void 0===e.checked&&n.value?e.checked||n.value:e.value||e.checked}),fireEvent(this,"config-changed",{config:this._config})}static get styles(){return css` div { display: grid; grid-gap: 12px; } #add-button { height: 32px; border-radius: 16px; border: none; background-color: var(--accent-color); } .button-header { height: auto; width: 100%; display: inline-flex; align-items: center; } .button-number { display: inline-flex; width: auto; } .remove-button { display: inline-flex; border-radius: 50%; width: 24px; height: 24px; text-align: center; line-height: 24px; vertical-align: middle; cursor: pointer; } `}}customElements.define("bubble-card-editor",BubbleCardEditor),window.customCards=window.customCards||[],window.customCards.push({type:"bubble-card",name:"Bubble Card",preview:!1,description:"A minimalist card collection with a nice pop-up touch."});
+const version = 'v0.0.1-beta.8';
+
+class BubbleCard extends HTMLElement {
+    set hass(hass) {
+        // Initialize the content if it's not there yet.
+        if (!this.content) {
+            this.attachShadow({
+                mode: 'open'
+            });
+            this.shadowRoot.innerHTML = `
+                <ha-card style="background: none; border: none; box-shadow: none;">
+                    <div class="card-content" style="padding: 0;">
+                    </div>
+                </ha-card>
+            `;
+            this.card = this.shadowRoot.querySelector("ha-card");
+            this.content = this.shadowRoot.querySelector("div");
+        }
+
+        editorMode(this);
+
+        function editorMode(t) {
+            if (window.location.search !== "?edit=1") {
+                t.editor = false;
+            } else {
+                t.editor = true;
+            }
+        }
+
+        function toggleEntity(entity) {
+            hass.callService('homeassistant', 'toggle', {
+                entity_id: entity
+            });
+        }
+        
+        const forwardHaptic = hapticType => {
+          fireEvent(window, "haptic", hapticType)
+        }
+        
+        const navigate = (_node, path, replace = false) => {
+          if (replace) {
+            history.replaceState(null, "", path)
+          } else {
+            history.pushState(null, "", path)
+          }
+          fireEvent(window, "location-changed", {
+            replace
+          })
+        }
+        
+        // Tap actions inspired from https://github.com/custom-cards/custom-card-helpers
+
+        const handleActionConfig = (node, hass, config, actionConfig) => {
+          if (
+            actionConfig.confirmation &&
+            (!actionConfig.confirmation.exemptions ||
+              !actionConfig.confirmation.exemptions.some(e => e.user === hass.user.id))
+          ) {
+            forwardHaptic("warning")
+        
+            if (
+              !confirm(
+                actionConfig.confirmation.text ||
+                  `Are you sure you want to ${actionConfig.action}?`
+              )
+            ) {
+              return
+            }
+          }
+        
+          switch (actionConfig.action) {
+            case "more-info":
+              if (this.config.entity || this.config.camera_image) {
+                fireEvent(node, "hass-more-info", {
+                  entityId: this.config.entity ? this.config.entity : this.config.camera_image
+                })
+              }
+              break
+            case "navigate":
+              if (actionConfig.navigation_path) {
+                navigate(node, actionConfig.navigation_path)
+              }
+              break
+            case "url":
+              if (actionConfig.url_path) {
+                window.open(actionConfig.url_path)
+              }
+              break
+            case "toggle":
+              if (this.config.entity) {
+                toggleEntity(this.config.entity)
+                forwardHaptic("success")
+              }
+              break
+            case "call-service": {
+              if (!actionConfig.service) {
+                forwardHaptic("failure")
+                return
+              }
+              const [domain, service] = actionConfig.service.split(".", 2)
+              hass.callService(
+                domain,
+                service,
+                actionConfig.service_data,
+                actionConfig.target
+              )
+              forwardHaptic("success")
+              break
+            }
+            case "fire-dom-event": {
+              fireEvent(node, "ll-custom", actionConfig)
+            }
+          }
+        }
+        
+        const handleAction = (node, hass, config, action) => {
+          let actionConfig
+        
+          if (action === "double_tap" && this.config.double_tap_action) {
+            actionConfig = this.config.double_tap_action
+          } else if (action === "hold" && this.config.hold_action) {
+            actionConfig = this.config.hold_action
+          } else if (action === "tap" && this.config.tap_action) {
+            actionConfig = this.config.tap_action
+          } else if (action === "double_tap" && !this.config.double_tap_action) {
+            actionConfig = {
+              action: "toggle"
+            }
+          } else if (action === "hold" && !this.config.hold_action) {
+            actionConfig = {
+              action: "more-info"
+            }
+          } else if (action === "tap" && !this.config.tap_action) {
+            actionConfig = {
+              action: "more-info"
+            }
+          }
+        
+          handleActionConfig(node, hass, config, actionConfig)
+        }
+        
+        const addAction = (function() {
+            let clickTimeout;
+            let lastClickTime;
+        
+            return function(eventType, actionType, element, self) {
+                element.addEventListener(eventType, () => { 
+                    const currentTime = new Date().getTime();
+                    const timeDiff = currentTime - (lastClickTime || 0);
+        
+                    if (eventType === 'click') {
+                        if (timeDiff < 250) { // Double click detected
+                            clearTimeout(clickTimeout);
+                            handleAction(self, hass, {}, 'double_tap');
+                        } else { // Single click detected
+                            clickTimeout = setTimeout(() => {
+                                handleAction(self, hass, {}, 'tap');
+                            }, 250);
+                        }
+                    } else {
+                        handleAction(self, hass, {},'hold');
+                    }
+        
+                    lastClickTime = currentTime;
+                });
+            };
+        })();
+        
+        function addActions(self, element) {
+            addAction('click', 'tap', element, self);
+            addAction('contextmenu', 'hold', element, self);
+        }
+        
+        const customStyles = !this.config.styles ? '' : this.config.styles;
+
+        // Initialize pop-up card
+        if (this.config.card_type === 'pop-up' && !this.getRootNode().host) {
+            // Hide vertical stack content before initialization
+            if (this.editor !== true) {
+                this.card.style.marginTop = '2000px';
+            }
+        } else if (this.config.card_type === 'pop-up') {
+            if (!this.popUp) {
+                this.card.style.marginTop = '0';
+                this.popUp = this.getRootNode().querySelector('#root');
+            }
+
+            const popUpHash = this.config.hash;
+            const popUp = this.popUp;
+            const entityId = this.config.entity || '';
+            const icon = this.config.icon || '';
+            const name = this.config.name || '';
+            const stateUnit = this.config.state_unit || '';
+            const state = this.config.state ? hass.states[this.config.state].state + stateUnit : '';
+            const marginTopMobile = this.config.margin_top_mobile 
+                ? (this.config.margin_top_mobile !== '0' ? this.config.margin_top_mobile : '0px')
+                : '0px';
+            const marginTopDesktop = this.config.margin_top_desktop 
+                ? (this.config.margin_top_desktop !== '0' ? this.config.margin_top_desktop : '0px')
+                : '0px';
+            const widthDesktop = this.config.width_desktop || '600px';
+            const isSidebarHidden = this.config.is_sidebar_hidden || 'false';
+            const widthDesktopDivided = widthDesktop.match(/(\d+)(\D+)/);
+            const displayPowerButton = this.config.entity ? 'flex' : 'none';
+
+            if (!this.headerAdded) {
+                const headerContainer = document.createElement("div");
+                headerContainer.setAttribute("id", "header-container");
+
+                const div = document.createElement("div");
+                headerContainer.appendChild(div);
+
+                const haIcon1 = document.createElement("ha-icon");
+                haIcon1.setAttribute("class", "header-icon");
+                haIcon1.setAttribute("icon", icon);
+                div.appendChild(haIcon1);
+                addActions(this, haIcon1);
+
+                const h2 = document.createElement("h2");
+                h2.textContent = name;
+                div.appendChild(h2);
+
+                const p = document.createElement("p");
+                p.textContent = state;
+                div.appendChild(p);
+
+                const haIcon2 = document.createElement("ha-icon");
+                haIcon2.setAttribute("class", "power-button");
+                haIcon2.setAttribute("icon", "mdi:power");
+                haIcon2.setAttribute("style", `display: ${displayPowerButton};`);
+                div.appendChild(haIcon2);
+
+                const button = document.createElement("button");
+                button.setAttribute("class", "close-pop-up");
+                button.setAttribute("onclick", "history.replaceState(null, null, location.href.split('#')[0]);");
+                headerContainer.appendChild(button);
+
+                const haIcon3 = document.createElement("ha-icon");
+                haIcon3.setAttribute("icon", "mdi:close");
+                button.appendChild(haIcon3);
+
+                this.content.appendChild(headerContainer);
+                this.header = div;
+
+                this.headerAdded = true;
+            }
+
+            if (this.headerAdded) {
+                const haIcon1 = this.content.querySelector("#header-container .header-icon");
+                haIcon1.setAttribute("icon", icon);
+                this.haIcon1 = haIcon1;
+
+                const h2 = this.content.querySelector("#header-container h2");
+                h2.textContent = name;
+
+                const p = this.content.querySelector("#header-container p");
+                p.textContent = state;
+
+                const haIcon2 = this.content.querySelector("#header-container .power-button");
+                haIcon2.setAttribute("style", `display: ${displayPowerButton};`);
+            }
+
+            if (!this.eventAdded) {
+                ['click', 'touchend', 'popstate'].forEach((eventType) => {
+                    if (window['checkHashRef_' + popUpHash]) {
+                        window.removeEventListener(eventType, window['checkHashRef_' + popUpHash]);
+                    }
+                    window['checkHashRef_' + popUpHash] = checkHash;
+                    window.addEventListener(eventType, window['checkHashRef_' + popUpHash]);
+                });
+
+                this.content.querySelector('.power-button').addEventListener('click', () => {
+                    toggleEntity(entityId);
+                });
+                
+                document.addEventListener('mousedown', function(e) {
+                    if (location.hash === popUpHash && 
+                        !e.composedPath().some(el => el.nodeName === 'HA-MORE-INFO-DIALOG') && 
+                        !e.composedPath().some(el => el.id === 'root' && !el.classList.contains('close-pop-up'))) {
+                            history.replaceState(null, null, location.href.split('#')[0]);
+                    }
+                });
+                
+                window.addEventListener('keydown', function(event) {
+                    if (event.key === 'Escape') {
+                        history.replaceState(null, null, location.href.split('#')[0]);
+                    }
+                });
+                
+                // Slide down to close pop-up
+                
+                let startTouchY;
+                let lastTouchY;
+                
+                popUp.addEventListener('touchstart', function(event) {
+                    // Record the Y position of the finger at the start of the touch
+                    startTouchY = event.touches[0].clientY;
+                    lastTouchY = startTouchY;
+                });
+                
+                popUp.addEventListener('touchmove', function(event) {
+                    // Calculate the distance the finger has traveled
+                    let touchMoveDistance = event.touches[0].clientY - startTouchY;
+                
+                    // If the distance is positive (i.e., the finger is moving downward) and exceeds a certain threshold, close the pop-up
+                    if (touchMoveDistance > 300 && event.touches[0].clientY > lastTouchY) {
+                        history.replaceState(null, null, location.href.split('#')[0]);
+                    }
+                
+                    // Update the Y position of the last touch
+                    lastTouchY = event.touches[0].clientY;
+                });
+
+                this.eventAdded = true;
+            }
+            
+            if (entityId !== '') {
+                const rgbColor = hass.states[entityId].attributes.rgb_color;
+                const rgbColorOpacity = rgbColor  
+                    ? `rgba(${rgbColor[0]}, ${rgbColor[1]}, ${rgbColor[2]}, 0.5)` 
+                    : hass.states[entityId].state !== ('off' || 'closed' || 'paused' || 'false') 
+                    ? `var(--accent-color)`
+                    : `var(--background-color,var(--secondary-background-color))`;
+                this.header.style.backgroundColor = rgbColorOpacity;
+            } 
+            
+            function checkHash(event) {
+                return new Promise((resolve, reject) => {
+                    let attempts = 0;
+                    const intervalId = setInterval(() => {
+                        attempts += 1;
+            
+                        // Open on hash change
+                        let hash = location.hash.split('?')[0];
+
+                        if (hash === popUpHash) {
+                            clearInterval(intervalId);
+                            resolve(openPopUp());
+                        // Close on back button from browser
+                        } else if (popUp.classList.contains('open-pop-up')) {
+                            clearInterval(intervalId);
+                            resolve(closePopUp());
+                        }
+            
+                        // Stop checking after 0.5 seconds
+                        if (attempts >= 10) {
+                            clearInterval(intervalId);
+                        }
+                    }, 50); // Check every 50ms for a total of 0.5 seconds
+                });
+            };
+            
+            checkHash();
+            
+            function openPopUp() {
+                return new Promise((resolve, reject) => {
+                    popUp.classList.remove('close-pop-up');
+                    popUp.classList.add('open-pop-up');
+            
+                    resolve();
+                });
+            }
+            
+            function closePopUp() {
+                return new Promise((resolve, reject) => {
+                    popUp.classList.remove('open-pop-up');
+                    popUp.classList.add('close-pop-up');
+            
+                    resolve();
+                });
+            }
+            
+            const headerStyles = `
+                ${customStyles}
+                #header-container {
+                    display: inline-flex;
+                    width: 100%;
+                    margin: 0;
+                    padding: 0;
+                }
+                #header-container > div {
+                    display: inline-flex;
+                    align-items: center;
+                    position: relative;
+                    padding: 6px;
+                    z-index: 2;
+                    flex-grow: 1;
+                    background-color: var(--background-color,var(--secondary-background-color));
+                    transition: background 1s;
+                    border-radius: 25px;
+                    margin-right: 14px;
+                }
+                .header-icon {
+                    display: inline-flex;
+                    width: 22px;
+                    height: 22px;
+                    padding: 8px;
+                    background-color: var(--card-background-color,var(--ha-card-background));
+                    border-radius: 100%;
+                    margin: 0 10px 0 0;
+                    cursor: ${!this.config.entity && !this.config.double_tap_action && !this.config.tap_action && !this.config.hold_action ? 'default' : 'pointer'}; 
+                }
+                #header-container h2 {
+                    display: inline-flex;
+                    margin: 0 18px 0 0;
+                    /*line-height: 0px;*/
+                    z-index: 100;
+                    font-size: 20px;
+                }
+                #header-container p {
+                    display: inline-flex;
+                    line-height: 0px;
+                    font-size: 16px;
+                }
+                .power-button {
+                    cursor: pointer; 
+                    flex-grow: inherit; 
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 12px;
+                    margin: 0 10px;
+                    background: none !important;
+                    justify-content: flex-end;
+                    background-color: var(--background-color,var(--secondary-background-color));
+                }
+                .close-pop-up {
+                    height: 50px;
+                    width: 50px;
+                    border: none;
+                    border-radius: 50%;
+                    z-index: 2;
+                    background: var(--background-color,var(--secondary-background-color));
+                    color: var(--primary-text-color);
+                    flex-shrink: 0;
+                    cursor: pointer;
+                }
+            `;
+
+            if (!this.styleAdded && this.editor !== true) {
+                const styleElement = document.createElement('style');
+                const headerStyleElement = document.createElement('style');
+
+                const styles = `
+                    ${customStyles}
+                    ha-card {
+                        margin-top: 0 !important;
+                        background: none !important;
+                        border: none !important;
+                    }
+                    .card-content {
+                        width: 100% !important;
+                        padding: 0 !important;
+                    }
+                    #root {
+                        position: fixed !important;
+                        margin: 0 -7px;
+                        width: calc(100% - 38px);
+                        background-color: var(--ha-card-background,var(--card-background-color));
+                        border-radius: 42px;
+                        top: calc(100% + ${marginTopMobile} + 54px); /*136px*/
+                        grid-gap: 12px !important;
+                        gap: 12px !important;
+                        grid-auto-rows: min-content;
+                        padding: 18px 18px 220px 18px !important;
+                        height: calc(100% - 240px) !important;
+                        -ms-overflow-style: none; /* for Internet Explorer, Edge */
+                        scrollbar-width: none; /* for Firefox */
+                        overflow-y: auto; 
+                        overflow-x: hidden; 
+                        z-index: 1 !important; /* Higher value hide the more-info panel */
+                        /* For older Safari but not working with Firefox */
+                        /* display: grid !important; */  
+                    }
+                    #root > bubble-card:first-child::after {
+                        content: '';
+                        display: block;
+                        position: sticky;
+                        top: 0;
+                        left: -50px;
+                        margin: -70px 0 -35px 0;
+                        width: 200%;
+                        height: 100px;
+                        background: linear-gradient(0deg, rgba(79, 69, 87, 0) 0%, var(--ha-card-background,var(--card-background-color)) 80%);
+                        z-index: 0;
+                    }
+                    #root::-webkit-scrollbar {
+                        display: none; /* for Chrome, Safari, and Opera */
+                    }
+                    #root > bubble-card:first-child {
+                        position: sticky;
+                        top: 0;
+                        z-index: 5;
+                        background: none !important;
+                    }
+                    #root.open-pop-up {
+                        transform: translateY(-100%);
+                        transition: transform .4s !important;
+                    }
+                    #root.open-pop-up > * {
+                      /* Block child items to overflow and if they do clip them */
+                      /*max-width: calc(100vw - 38px);*/
+                      max-width: 100% !important;
+                      overflow-x: clip;
+                    }
+                    #root.close-pop-up { 
+                        transform: translateY(0%);
+                        transition: transform .4s !important;
+                        /* animation: hide 1s forwards; */
+                    }
+                    @media only screen and (min-width: 768px) {
+                        #root {
+                            top: calc(100% + ${marginTopDesktop} + 54px);
+                            width: calc(${widthDesktop} - 36px) !important;
+                            left: calc(50% - ${widthDesktopDivided[1] / 2}${widthDesktopDivided[2]});
+                            margin: 0 !important;
+                        }
+                    }  
+                    @media only screen and (min-width: 870px) {
+                        #root {
+                            top: calc(100% + ${marginTopDesktop} + 54px);
+                            width: calc(${widthDesktop} - ${isSidebarHidden === true ? '0px' : '92px'}) !important; 
+                            left: calc(50% - ${widthDesktopDivided[1] / 2}${widthDesktopDivided[2]} + ${isSidebarHidden === true ? '0px' : '56px'});
+                            margin: 0 !important;
+                        }
+                    }    
+                `;
+
+                styleElement.innerHTML = styles;
+                headerStyleElement.innerHTML = headerStyles;
+                popUp.appendChild(styleElement);
+                this.content.appendChild(headerStyleElement);
+                this.styleAdded = true;
+            } else if (this.editor === true) {
+                const styleElement = this.getRootNode().querySelector('#root').querySelector("style");
+                if (styleElement) {
+                    popUp.removeChild(styleElement);
+                }
+                popUp.style.backgroundColor = 'var(--ha-card-background,var(--card-background-color))';
+                popUp.style.padding = '16px';
+                popUp.style.borderRadius = '42px';
+                popUp.style.gridGap = '12px';
+                popUp.style.gap = '12px';
+                const headerStyleElement = document.createElement('style');
+                headerStyleElement.innerHTML = headerStyles;
+                this.content.appendChild(headerStyleElement);
+                this.styleAdded = false;
+            }
+        }
+
+        // Initialize horizontal buttons stack
+        if (this.config.card_type === 'horizontal-buttons-stack') {
+            const createButton = (button, link, icon) => {
+                const buttonElement = document.createElement("button");
+                buttonElement.onclick = function() { navigate('', link); }; 
+                buttonElement.setAttribute("class", "button");
+                buttonElement.innerHTML = `
+                    ${icon !== '' ? `<ha-icon icon="${icon}" class="icon" style="${button !== '' ? `margin-right: 8px;` : ''}"></ha-icon>` : ''}
+                    ${button !== '' ? `<p class="name">${button}</p>` : ''}
+                `;
+                return buttonElement;
+            };
+
+            const updateButtonStyle = (buttonElement, lightEntity) => {
+                if (hass.states[lightEntity].attributes.rgb_color) {
+                    const rgbColor = hass.states[lightEntity].attributes.rgb_color;
+                    const rgbColorOpacity = `rgba(${rgbColor[0]}, ${rgbColor[1]}, ${rgbColor[2]}, 0.5)`;
+                    buttonElement.style.backgroundColor = rgbColorOpacity;
+                    buttonElement.style.border = '1px solid rgba(0,0,0,0)';
+                } else if (!hass.states[lightEntity].attributes.rgb_color && hass.states[lightEntity].state == 'on') {
+                    buttonElement.style.backgroundColor = 'rgba(255,255,255,0.5)';
+                    buttonElement.style.border = '1px solid rgba(0,0,0,0)';
+                } else {
+                    buttonElement.style.backgroundColor = 'rgba(0,0,0,0)';
+                    buttonElement.style.border = '1px solid var(--primary-text-color)';
+                }
+            };
+
+            if (!this.buttonsAdded) {
+                const buttonsContainer = document.createElement("div");
+                buttonsContainer.setAttribute("class", "horizontal-buttons-stack-container");
+                this.content.appendChild(buttonsContainer);
+            }
+
+            const updateButtonsOrder = () => {
+                let buttonsList = [];
+                let i = 1;
+                while (this.config[i + '_link']) {
+                    const prefix = i + '_';
+                    const button = this.config[prefix + 'name'] || '';
+                    const pirSensor = this.config[prefix + 'pir_sensor'];
+                    const icon = this.config[prefix + 'icon'] || '';
+                    const link = this.config[prefix + 'link'];
+                    const lightEntity = this.config[prefix + 'entity'];
+                    buttonsList.push({
+                        button,
+                        pirSensor,
+                        icon,
+                        link,
+                        lightEntity
+                    });
+                    i++;
+                }
+                
+                if (this.config.auto_order) {
+                    buttonsList.sort((a, b) => {
+                        // Check if both PIR sensors are defined
+                        if (a.pirSensor && b.pirSensor) {
+                            // Check if the PIR sensor state is "on" for both buttons
+                            if (hass.states[a.pirSensor].state === "on" && hass.states[b.pirSensor].state === "on") {
+                                let aTime = hass.states[a.pirSensor].last_updated;
+                                let bTime = hass.states[b.pirSensor].last_updated;
+                                return aTime < bTime ? 1 : -1;
+                            }
+                            // If only a.pirSensor is "on", place a before b
+                            else if (hass.states[a.pirSensor].state === "on") {
+                                return -1;
+                            }
+                            // If only b.pirSensor is "on", place b before a
+                            else if (hass.states[b.pirSensor].state === "on") {
+                                return 1;
+                            }
+                            // If neither PIR sensor is "on", arrangement based only on the state of last updated even if off
+                            let aTime = hass.states[a.pirSensor].last_updated;
+                            let bTime = hass.states[b.pirSensor].last_updated;
+                            return aTime < bTime ? 1 : -1;
+                        }
+                        // If a.pirSensor is not defined, place a after b
+                        else if (!a.pirSensor) {
+                            return 1;
+                        }
+                        // If b.pirSensor is not defined, place b after a
+                        else if (!b.pirSensor) {
+                            return -1;
+                        }
+                    });
+                }
+                
+                if (!this.buttonsAdded) {
+                    const buttonsContainer = this.content.querySelector(".horizontal-buttons-stack-container");
+                    const buttons = {};
+                    buttonsList.forEach(button => {
+                        const buttonElement = createButton(button.button, button.link, button.icon);
+                        // Store the button element using its link as key
+                        buttons[button.link] = buttonElement;
+                        buttonsContainer.appendChild(buttonElement);
+                    });
+                    this.buttonsAdded = true;
+                    this.buttons = buttons;
+                }
+
+                let currentPosition = 0;
+                const margin = 12;
+                buttonsList.forEach((button, index) => {
+                    let buttonElement = this.buttons[button.link];
+                    if (buttonElement) {
+                        let buttonWidth = localStorage.getItem(`buttonWidth-${button.link}`);
+                        let buttonContent = localStorage.getItem(`buttonContent-${button.link}`);
+                        if (!buttonWidth || buttonWidth === '0' || buttonContent !== buttonElement.innerHTML || this.editor === true) {
+                            buttonWidth = buttonElement.offsetWidth;
+                            localStorage.setItem(`buttonWidth-${button.link}`, buttonWidth);
+                            localStorage.setItem(`buttonContent-${button.link}`, buttonElement.innerHTML);
+                        }
+                        buttonElement.style.transform = `translateX(${currentPosition}px)`;
+                        currentPosition += parseInt(buttonWidth) + margin;
+                    }
+                    if (button.lightEntity) {
+                        updateButtonStyle(buttonElement, button.lightEntity);
+                    }
+                });
+            }
+
+            updateButtonsOrder();
+
+            if (!this.styleAdded) {
+                const styleElement = document.createElement('style');
+                const styles = `
+                    ${customStyles}
+                    .horizontal-buttons-stack {
+                        width: 100%;
+                        margin-top: 0 !important;
+                        background: none !important;
+                        position: fixed;
+                        height: 51px;
+                        bottom: 16px;
+                        /* transform: translateY(200px); */
+                        /* animation: from-bottom 1.3s forwards; */
+                        z-index: 1 !important; /* Higher value hide the more-info panel */
+                    }
+                    @keyframes from-bottom {
+                        0% {transform: translateY(200px);}
+                        20% {transform: translateY(200px);}
+                        46% {transform: translateY(-8px);}
+                        56% {transform: translateY(1px);}
+                        62% {transform: translateY(-2px);}
+                        70% {transform: translateY(0);}
+                        100% {transform: translateY(0);}
+                    }
+                    .horizontal-buttons-stack-container {
+                        width: max-content;
+                        position: relative;
+                        height: 51px;
+                    }
+                    .button {
+                        display: flex;
+                        position: absolute;
+                        box-sizing: border-box;
+                        border: 1px solid var(--primary-text-color);
+                        align-items: center;
+                        height: 50px;
+                        white-space: nowrap;
+                        width: auto;
+                        border-radius: 25px;
+                        z-index: 2;
+                        padding: 16px;
+                        background: none;
+                        transition: background-color 1s, border 1s, transform 1s;
+                        color: var(--primary-text-color);
+                    }
+                    .icon {
+                        height: 24px;
+                    }
+                    .card-content {
+                        width: 100%;
+                        box-sizing: border-box;
+                        margin: 0 -36px !important;
+                        padding: 0 36px !important;
+                        overflow: scroll !important;
+                        -ms-overflow-style: none;
+                        scrollbar-width: none;
+                        mask-image: linear-gradient(90deg, transparent 2%, rgba(0, 0, 0, 1) 6%, rgba(0, 0, 0, 1) 96%, transparent 100%);
+                        -webkit-mask-image: linear-gradient(90deg, transparent 2%, rgba(0, 0, 0, 1) 6%, rgba(0, 0, 0, 1) 96%, transparent 100%);
+                    }
+                    .horizontal-buttons-stack::before {
+                        content: '';
+                        position: absolute;
+                        top: -32px;
+                        left: -100%;
+                        display: block;
+                        background: linear-gradient(0deg, var(--background-color, var(--primary-background-color)) 50%, rgba(79, 69, 87, 0));
+                        width: 200%;
+                        height: 100px;
+                    }
+                    .card-content::-webkit-scrollbar {
+                        display: none;
+                    }
+                    @media only screen and (min-width: 768px) {
+                        .card-content {
+                            position: fixed;
+                            width: 538px !important;
+                            left: calc(50% - 246px);
+                            padding: 0 26px !important;
+                        }
+                    }
+                    @media only screen and (min-width: 870px) {
+                        .card-content {
+                            position: fixed;
+                            width: 538px !important;
+                            left: calc(50% - 218px);
+                            padding: 0 26px !important;
+                        }
+                    }
+                `;
+
+                styleElement.innerHTML = styles;
+                this.card.classList.add('horizontal-buttons-stack');
+                this.content.querySelector(".horizontal-buttons-stack-container").appendChild(styleElement);
+                this.styleAdded = true;
+            }
+
+            if (this.editor === true) {
+                if (!this.editorStyleAdded) {
+                    const styleElement = document.createElement('style');
+                    const styles = `
+                        ${customStyles}
+                        .horizontal-buttons-stack {
+                            position: relative;
+                            height: 51px;
+                            bottom: 0px;
+                            overflow: hidden;
+                        }
+                        .horizontal-buttons-stack::before {
+                            top: -32px;
+                            left: -100%;
+                            background: none;
+                            width: 100%;
+                            height: 0;
+                        }
+                        .card-content {
+                            position: relative;
+                            mask-image: linear-gradient(90deg, transparent 2%, rgba(0, 0, 0, 1) 6%, rgba(0, 0, 0, 1) 96%, transparent 100%);
+                            -webkit-mask-image: linear-gradient(90deg, transparent 2%, rgba(0, 0, 0, 1) 6%, rgba(0, 0, 0, 1) 96%, transparent 100%);
+                        }
+                        @media only screen and (min-width: 870px) {
+                            .card-content {
+                                left: calc(50% - 230px);
+                            }
+                        }
+                    `;
+                    styleElement.innerHTML = styles;
+                    this.card.appendChild(styleElement);
+                    this.editorStyleAdded = true;
+                }
+            } else if (this.card.querySelector("ha-card > style")) {
+                const styleElement = this.card.querySelector("ha-card > style");
+                this.card.removeChild(styleElement);
+            }
+        }
+
+        // Initialize button
+        if (this.config.card_type === 'button') {
+            if (!this.buttonAdded) {
+                const buttonContainer = document.createElement("div");
+                buttonContainer.setAttribute("class", "button-container");
+                this.content.appendChild(buttonContainer);
+            }
+
+            const entityId = this.config.entity;
+            const icon = !this.config.icon ? hass.states[entityId].attributes.icon || hass.states[entityId].attributes.entity_picture || '' : this.config.icon;
+            const name = !this.config.name ? hass.states[entityId].attributes.friendly_name || '' : this.config.name;
+            const buttonType = this.config.button_type || 'switch';
+            const state = !entityId ? '' : hass.states[entityId].state;
+            let currentBrightness = !entityId ? '' : hass.states[entityId].attributes.brightness || 0;
+            let currentVolume = !entityId ? '' : hass.states[entityId].attributes.volume_level || 0;
+            let isDragging = false;
+            let brightness = currentBrightness;
+            let volume = currentVolume;
+            let startX = 0;
+            let startY = 0;
+            let startValue = 0;
+            let movingVertically = false;
+            let timeoutId = null;
+
+            const iconContainer = document.createElement('div');
+            iconContainer.setAttribute('class', 'icon-container');
+            this.iconContainer = iconContainer;
+
+            const nameContainer = document.createElement('div');
+            nameContainer.setAttribute('class', 'nameContainer');
+
+            const switchButton = document.createElement('div');
+            switchButton.setAttribute('class', 'switch-button');
+
+            const rangeSlider = document.createElement('div');
+            rangeSlider.setAttribute('class', 'range-slider');
+
+            const rangeFill = document.createElement('div');
+
+            rangeFill.setAttribute('class', 'range-fill');
+            if (entityId && entityId.startsWith("light.") && buttonType === 'slider') {
+                rangeFill.style.transform = `translateX(${(currentBrightness / 255) * 100}%)`;
+            } else if (entityId && entityId.startsWith("media_player.") && buttonType === 'slider') {
+                rangeFill.style.transform = `translateX(${currentVolume * 100}%)`;
+            }
+
+            if (!this.buttonContainer) {
+                this.buttonContainer = this.content.querySelector(".button-container");
+
+                if (buttonType === 'slider' && !this.buttonAdded) {
+                    this.buttonContainer.appendChild(rangeSlider);
+                    rangeSlider.appendChild(iconContainer);
+                    rangeSlider.appendChild(nameContainer);
+                    rangeSlider.appendChild(rangeFill);
+                    this.rangeFill = this.content.querySelector(".range-fill");
+                } else if (buttonType === 'switch' || buttonType === 'custom') {
+                    this.buttonContainer.appendChild(switchButton);
+                    switchButton.appendChild(iconContainer);
+                    switchButton.appendChild(nameContainer);
+                    this.switchButton = this.content.querySelector(".switch-button");
+                }
+                
+                if (hass.states[entityId].attributes.entity_picture || icon.startsWith("/api/image/")) {
+                    iconContainer.innerHTML = `<img class="entity-picture" src="${icon}" alt="Icon" />`;
+                } else {
+                    iconContainer.innerHTML = `<ha-icon icon="${icon}" class="icon"></ha-icon>`;
+                }
+                nameContainer.innerHTML = `<p>${name}</p>`;
+
+                this.buttonAdded = true;
+            }
+
+            function tapFeedback(content) {
+                let feedbackElement = content.querySelector('.feedback-element');
+                if (!feedbackElement) {
+                    feedbackElement = document.createElement('div');
+                    feedbackElement.setAttribute('class', 'feedback-element');
+                    content.appendChild(feedbackElement);
+                }
+
+                feedbackElement.style.animation = 'tap-feedback .5s';
+                setTimeout(() => {
+                    feedbackElement.style.animation = 'none';
+                    content.removeChild(feedbackElement);
+                }, 500);
+            }
+            
+            function handleStart(e) {
+                startX = e.pageX || (e.touches ? e.touches[0].pageX : 0);
+                startY = e.pageY || (e.touches ? e.touches[0].pageY : 0);
+                startValue = rangeSlider.value;
+                if (e.target !== iconContainer.querySelector('ha-icon')) {
+                    isDragging = true;
+                    document.addEventListener('mouseup', handleEnd);
+                    document.addEventListener('touchend', handleEnd);
+                    document.addEventListener('mousemove', checkVerticalScroll);
+                    document.addEventListener('touchmove', checkVerticalScroll);
+            
+                    // Add a delay before activating the slider
+                    timeoutId = setTimeout(() => {
+                        updateRange(e.pageX || e.touches[0].pageX);
+                        updateEntity();
+                        timeoutId = null; // Reset timeoutId once the delay has elapsed
+                    }, 200);
+                }
+            }
+            
+            function checkVerticalScroll(e) {
+                const x = e.pageX || (e.touches ? e.touches[0].pageX : 0);
+                const y = e.pageY || (e.touches ? e.touches[0].pageY : 0);
+                if (Math.abs(y - startY) > Math.abs(x - startX)) {
+                    clearTimeout(timeoutId); // Cancel the activation of the slider if vertical scrolling is detected
+                    handleEnd();
+                } else {
+                    document.removeEventListener('mousemove', checkVerticalScroll);
+                    document.removeEventListener('touchmove', checkVerticalScroll);
+                    document.addEventListener('mousemove', handleMove);
+                    document.addEventListener('touchmove', handleMove);
+                }
+            }
+
+            function handleEnd() {
+                isDragging = false;
+                movingVertically = false;
+                updateEntity();
+                document.removeEventListener('mouseup', handleEnd);
+                document.removeEventListener('touchend', handleEnd);
+                document.removeEventListener('mousemove', handleMove);
+                document.removeEventListener('touchmove', handleMove);
+            }
+            
+            function updateEntity() {
+                if (entityId.startsWith("light.")) {
+                    currentBrightness = brightness;
+                    hass.callService('light', 'turn_on', {
+                        entity_id: entityId,
+                        brightness: currentBrightness
+                    });
+                } else if (currentVolume !== volume && entityId.startsWith("media_player.")) {
+                    currentVolume = volume;
+                    hass.callService('media_player', 'volume_set', {
+                        entity_id: entityId,
+                        volume_level: currentVolume
+                    });
+                }
+            }
+            
+            function handleMove(e) {
+                const x = e.pageX || (e.touches ? e.touches[0].pageX : 0);
+                const y = e.pageY || (e.touches ? e.touches[0].pageY : 0);
+                // Check if the movement is large enough to be considered a slide
+                if (isDragging && Math.abs(x - startX) > 10) {
+                    updateRange(x);
+                } else if (isDragging && Math.abs(y - startY) > 10) { // If the movement is primarily vertical
+                    isDragging = false; // Stop the slide
+                    rangeSlider.value = startValue; // Reset to initial value
+                }
+            }
+
+            if (!this.eventAdded && buttonType === 'switch') {
+                switchButton.addEventListener('click', () => tapFeedback(this.switchButton));
+                switchButton.addEventListener('click', function(e) {
+                    if (!e.target.closest('ha-icon')) {
+                        toggleEntity(entityId);
+                    }
+                });
+                addActions(this, this.iconContainer);
+                this.eventAdded = true;
+            } else if (!this.eventAdded && buttonType === 'slider') {
+                rangeSlider.addEventListener('mousedown', handleStart);
+                rangeSlider.addEventListener('touchstart', handleStart);
+                addActions(this, this.iconContainer);
+                this.eventAdded = true;
+            } else if (!this.eventAdded && buttonType === 'custom') {
+                switchButton.addEventListener('click', () => tapFeedback(this.switchButton));
+                addActions(this, this.switchButton);
+                this.eventAdded = true;
+            }
+
+            if (!this.isDragging && buttonType === 'slider') {
+                this.rangeFill.style.transition = 'all .2s';
+                if (entityId.startsWith("light.")) {
+                    this.rangeFill.style.transform = `translateX(${(currentBrightness / 255) * 100}%)`;
+                } else if (entityId.startsWith("media_player.")) {
+                    this.rangeFill.style.transform = `translateX(${currentVolume * 100}%)`;
+                }
+            }
+
+            function updateButtonStyle(state, content) {
+                content.buttonContainer.style.opacity = state !== 'unavailable' ? '1' : '0.5';
+                if (['switch', 'custom'].includes(buttonType)) {
+                    const backgroundColor = ['on', 'open', 'cleaning', 'true', 'home', 'playing'].includes(state) ? 'var(--accent-color)' : 'rgba(0,0,0,0)';
+                    content.switchButton.style.backgroundColor = backgroundColor;
+                }
+            }
+
+            updateButtonStyle(state, this);
+
+            function updateRange(x) {
+                const rect = rangeSlider.getBoundingClientRect();
+                const position = Math.min(Math.max(x - rect.left, 0), rect.width);
+                const percentage = position / rect.width;
+                if (entityId.startsWith("light.")) {
+                    brightness = Math.round(percentage * 255);
+                } else if (entityId.startsWith("media_player.")) {
+                    volume = percentage;
+                }
+
+                rangeFill.style.transition = 'none';
+                rangeFill.style.transform = `translateX(${percentage * 100}%)`;
+            }
+
+            if (buttonType === 'slider') {
+                const rgbColor = hass.states[entityId].attributes.rgb_color;
+                const rgbColorOpacity = rgbColor ? `rgba(${rgbColor[0]}, ${rgbColor[1]}, ${rgbColor[2]}, 0.5)` : `rgba(255, 255, 255, 0.5)`;
+                rangeFill.style.backgroundColor = rgbColorOpacity;
+                this.rangeFill.style.backgroundColor = rgbColorOpacity;
+            }
+
+            if (!this.styleAdded) {
+                const styleElement = document.createElement('style');
+                const styles = `
+                    ${customStyles}
+                    ha-card {
+                        margin-top: 0 !important;
+                        background: none !important;
+                    }
+                    
+                    .button-container {
+                        position: relative;
+                        width: 100%;
+                        height: 50px;
+                        z-index: 0;
+                        background-color: var(--background-color-2,var(--secondary-background-color));
+                        border-radius: 25px;
+                        mask-image: radial-gradient(white, black);
+                        -webkit-mask-image: radial-gradient(white, black);
+                        -webkit-backface-visibility: hidden;
+                        -moz-backface-visibility: hidden;
+                        -webkit-transform: translateZ(0);
+                        overflow: hidden;
+                    }
+                    
+                    .switch-button,
+                    .range-slider {
+                        display: inline-flex;
+                        position: absolute;
+                        height: 100%;
+                        width: 100%;
+                        transition: background-color 1.5s;
+                    }
+            
+                    .range-fill {
+                        position: absolute;
+                        top: 0;
+                        bottom: 0;
+                        left: 0;
+                    }
+                    
+                    .switch-button {
+                        cursor: pointer !important;
+                    }
+                    
+                    .range-slider {
+                        cursor: ew-resize;
+                    }
+                    
+                    .range-fill {
+                        z-index: 1;
+                        width: 100%;
+                        left: -100%;
+                    }
+                    
+                    .icon-container {
+                        position: absolute;
+                        z-index: 2;
+                        width: 38px;
+                        height: 38px;
+                        margin: 6px;
+                        border-radius: 50%;
+                        background-color: var(--card-background-color,var(--ha-card-background));
+                        cursor: pointer !important;
+                    }
+                    
+                    ha-icon {
+                        display: flex;
+                        position: absolute;
+                        margin: inherit;
+                        padding: 1px 2px;
+                        width: 22px; 
+                        height: 22px;
+                    }
+                    
+                    .entity-picture {
+                        height: inherit;
+                        border-radius: 100%;
+                    }
+                    
+                    .nameContainer {
+                        position: relative;
+                        display: inline-flex;
+                        margin-left: 58px;
+                        z-index: 2;
+                        font-weight: 600;
+                        align-items: center;
+                    }
+                    
+                    .nameContainer p {
+                        display: inline-flex;
+                    }
+                    
+                    .feedback-element {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        opacity: 0;
+                        width: 100%;
+                        height: 100%;
+                        background-color: rgb(0,0,0);
+                    }
+                    
+                    @keyframes tap-feedback {
+                        0% {transform: translateX(-100%); opacity: 0;}
+                        64% {transform: translateX(0); opacity: 0.1;}
+                        100% {transform: translateX(100%); opacity: 0;}
+                    }
+                `;
+
+                styleElement.innerHTML = styles;
+                this.content.appendChild(styleElement);
+                this.styleAdded = true;
+            }
+        }
+
+        // Initialize separator
+        if (this.config.card_type === 'separator') {
+            const icon = !this.config.icon ? '' : this.config.icon;
+            const name = !this.config.name ? '' : this.config.name;
+
+            if (!this.separatorAdded) {
+                const separatorContainer = document.createElement("div");
+                separatorContainer.setAttribute("class", "separator-container");
+                separatorContainer.innerHTML = `
+                    <div>
+                        <ha-icon icon="${icon}"></ha-icon>
+                        <h4>${name}</h4>
+                    </div>
+                    <div></div>
+                `
+                this.content.appendChild(separatorContainer);
+                this.separatorAdded = true;
+
+                if (!this.styleAdded) {
+                    const styleElement = document.createElement('style');
+                    const styles = `
+                        ${customStyles}
+                        .separator-container {
+                            display: inline-flex;
+                            width: 100%;
+                        }
+                        .separator-container div:first-child {
+                            display: inline-flex;
+                            max-width: calc(100% - 38px);
+                        }
+                        .separator-container div ha-icon{
+                            display: inline-flex;
+                            height: 24px;
+                            width: 24px;
+                            margin: 0 20px 0 8px;
+                            transform: translateY(-2px);
+                        }
+                        .separator-container div h4{
+                            display: inline-flex;
+                            margin: 0 20px 0 0;
+                            font-size: 17px;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+                        .separator-container div:last-child{
+                            display: inline-flex; 
+                            border-radius: 6px; 
+                            opacity: 0.3; 
+                            margin-left: 10px; 
+                            flex-grow: 1; 
+                            height: 6px; 
+                            align-self: center; 
+                            background-color: var(--background-color,var(--secondary-background-color));
+                    `;
+
+                    styleElement.innerHTML = styles;
+                    this.content.appendChild(styleElement);
+                    this.styleAdded = true;
+                }
+            }
+        }
+
+        // Initialize cover card
+        if (this.config.card_type === 'cover') {
+            const entity = this.config.entity;
+            const iconOpen = this.config.icon_open ? this.config.icon_open : 'mdi:window-shutter-open';
+            const iconClosed = this.config.icon_close ? this.config.icon_close : 'mdi:window-shutter'
+            const icon = hass.states[this.config.entity].state === 'open' ? iconOpen : iconClosed;
+            const name = !this.config.name ? hass.states[entity].attributes.friendly_name || '' : this.config.name;
+            const openCover = !this.config.open_service ? 'cover.open_cover' : this.config.open_service;
+            const closeCover = !this.config.close_service ? 'cover.close_cover' : this.config.close_service;
+            const stopCover = !this.config.stop_service ? 'cover.stop_cover' : this.config.stop_service;
+
+
+            if (!this.coverAdded) {
+                const coverContainer = document.createElement("div");
+                coverContainer.setAttribute("class", "cover-container");
+                coverContainer.innerHTML = `
+                  <div class="header-container">
+                    <div class="icon-container">
+                    </div>
+                    <p class="name">${name}</p>
+                  </div>
+                  <div class="buttons-container">
+                    <button class="button open">
+                        <ha-icon icon="mdi:arrow-up"></ha-icon>
+                    </button>
+                    <button class="button stop">
+                        <ha-icon icon="mdi:stop"></ha-icon>
+                    </button>
+                    <button class="button close">
+                        <ha-icon icon="mdi:arrow-down"></ha-icon>
+                    </button>
+                  </div>
+                `
+                this.content.appendChild(coverContainer);
+
+                const openButton = coverContainer.querySelector('.open');
+                const stopButton = coverContainer.querySelector('.stop');
+                const closeButton = coverContainer.querySelector('.close');
+
+                openButton.addEventListener('click', () => {
+                    hass.callService(openCover.split('.')[0], openCover.split('.')[1], {
+                        entity_id: entity
+                    });
+                });
+                stopButton.addEventListener('click', () => {
+                    hass.callService(stopCover.split('.')[0], stopCover.split('.')[1], {
+                        entity_id: entity
+                    });
+                });
+                closeButton.addEventListener('click', () => {
+                    hass.callService(closeCover.split('.')[0], closeCover.split('.')[1], {
+                        entity_id: entity
+                    });
+                });
+                const iconContainer = this.content.querySelector('.icon-container');
+                addActions(this, iconContainer);
+
+                this.coverAdded = true;
+            }
+
+            this.content.querySelector('.icon-container').innerHTML = `<ha-icon icon="${icon}" class="icon"></ha-icon>`;
+
+            if (!this.styleAdded) {
+                const styleElement = document.createElement('style');
+                const styles = `
+                    ${customStyles}
+                    ha-card {
+                        margin-top: 0 !important;
+                        background: none !important;
+                    }
+                    
+                    .header-container {
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 10px;
+                    }
+                    
+                    .name {
+                        display: inline-block; 
+                        margin-left: 10px;
+                        font-weight: 600;
+                    }
+                    
+                    .cover-container {
+                        display: grid;
+                    }
+                    
+                    .icon-container {
+                        display: flex;
+                        margin: 0 !important;
+                        align-items: center;
+                        justify-content: center;
+                        cursor: pointer;
+                        z-index: 2;
+                        width: 48px;
+                        height: 48px;
+                        margin: 6px;
+                        border-radius: 50%;
+                        background-color: var(--card-background-color,var(--ha-card-background));
+                        border: 6px solid var(--background-color-2,var(--secondary-background-color));
+                        box-sizing: border-box;
+                    }
+                    
+                    .buttons-container {
+                        display: grid;
+                        align-self: center;
+                        grid-auto-flow: column;
+                        grid-gap: 18px;             
+                    }
+                    
+                    ha-icon {
+                        display: flex; 
+                        height: 24px; 
+                        width: 24px; 
+                        color: var(--primary-text-color);
+                    }
+                    
+                    .button {
+                        display: flex;
+                        background: var(--background-color-2,var(--secondary-background-color));
+                        height: 42px;
+                        border-radius: 32px;
+                        align-items: center;
+                        justify-content: center;
+                        cursor: pointer;
+                        border: none;
+                    }
+                `;
+
+                styleElement.innerHTML = styles;
+                this.content.appendChild(styleElement);
+                this.styleAdded = true;
+            }
+        }
+
+        // Intitalize empty card
+        if (this.config.card_type === 'empty-column') {
+            if (!this.emptyCollumnAdded) {
+                const separatorContainer = document.createElement("div");
+                separatorContainer.setAttribute("class", "empty-column");
+                separatorContainer.innerHTML = `
+              <div style="display: flex; width: 100%;">
+              </div>
+              `
+                this.content.appendChild(separatorContainer);
+                this.emptyColumnAdded = true;
+            }
+        }
+    }
+
+    setConfig(config) {
+        // if (!config.card_type) {
+        //   throw new Error("You need to define a card type (card_type: pop-up)");
+        // }
+        if (config.card_type === 'pop-up') {
+            if (!config.hash) {
+                throw new Error("You need to define an hash");
+            }
+            if (!config.icon) {
+                throw new Error("You need to define an icon");
+            }
+            if (!config.name) {
+                throw new Error("You need to define a name");
+            }
+        } else if (config.card_type === 'horizontal-buttons-stack') {
+            var definedLinks = {};
+            
+            for (var key in config) {
+              if (key.match(/^\d+_icon$/)) {
+                var iconKey = key;
+                var linkKey = key.replace('_icon', '_link');
+            
+                if (config[linkKey] === undefined) {
+                    throw new Error("You need to define " + linkKey);
+                }
+            
+                if (definedLinks[config[linkKey]]) {
+                    throw new Error("You can't use " + config[linkKey] + " twice" );
+                }
+            
+                definedLinks[config[linkKey]] = true;
+              }
+            }
+        } else if (config.card_type === 'button' || config.card_type === 'cover') {
+            if (!config.entity) {
+                throw new Error("You need to define an entity");
+            }
+        }
+        this.config = config;
+    }
+
+    //   static getStubConfig() {
+    //     // const firstLight = Object.keys(this.hass.states).find((eid) => eid.substr(0, eid.indexOf(".")) === "light");
+    //     // console.log(firstLight);
+    //     return { 
+    //         card_type: 'pop-up', 
+    //         name: 'Bubble Card',
+    //         icon: 'mdi:heart',
+    //         hash: '#######',
+    //     }
+    //   }
+
+    getCardSize() {
+        return 1;
+    }
+
+    static getConfigElement() {
+        return document.createElement("bubble-card-editor");
+    }
+}
+
+console.info(
+    `%c Bubble Card %c ${version} `,
+    'background-color: #555;color: #fff;padding: 3px 2px 3px 3px;border-radius: 14px 0 0 14px;font-family: DejaVu Sans,Verdana,Geneva,sans-serif;text-shadow: 0 1px 0 rgba(1, 1, 1, 0.3)',
+    'background-color: #506eac;color: #fff;padding: 3px 3px 3px 2px;border-radius: 0 14px 14px 0;font-family: DejaVu Sans,Verdana,Geneva,sans-serif;text-shadow: 0 1px 0 rgba(1, 1, 1, 0.3)'
+);
+
+customElements.define("bubble-card", BubbleCard);
+
+// Editor GUI ///////////////////////////////////////////////////////////////////////////////////
+
+const fireEvent = (node, type, detail, options) => {
+    options = options || {};
+    detail = detail === null || detail === undefined ? {} : detail;
+    const event = new Event(type, {
+        bubbles: options.bubbles === undefined ? true : options.bubbles,
+        cancelable: Boolean(options.cancelable),
+        composed: options.composed === undefined ? true : options.composed,
+    });
+    event.detail = detail;
+    node.dispatchEvent(event);
+    return event;
+};
+
+customElements.get("ha-switch");
+
+const LitElement = Object.getPrototypeOf(customElements.get("ha-panel-lovelace"));
+const html = LitElement.prototype.html;
+const css = LitElement.prototype.css;
+//const render = LitElement.prototype.render;
+
+class BubbleCardEditor extends LitElement {
+    setConfig(config) {
+        this._config = {
+            ...config
+        };
+    }
+
+    static get properties() {
+        return {
+            hass: {},
+            _config: {}
+        };
+    }
+
+    get _card_type() {
+        return this._config.card_type || '';
+    }
+
+    get _button_type() {
+        return this._config.button_type || 'switch';
+    }
+
+    get _entity() {
+        return this._config.entity || '';
+    }
+
+    get _name() {
+        return this._config.name || '';
+    }
+
+    get _icon() {
+        return this._config.icon || '';
+    }
+
+    get _state() {
+        return this._config.state || '';
+    }
+
+    get _state_unit() {
+        return this._config.state_unit || '';
+    }
+
+    get _hash() {
+        return this._config.hash || '#pop-up-name';
+    }
+
+    get _margin_top_mobile() {
+        return this._config.margin_top_mobile || '0px';
+    }
+
+    get _margin_top_desktop() {
+        return this._config.margin_top_desktop || '0px';
+    }
+
+    get _width_desktop() {
+        return this._config.width_desktop || '600px';
+    }
+
+    get _is_sidebar_hidden() {
+        return this._config.is_sidebar_hidden || false;
+    }
+
+    get _icon_open() {
+        return this._config.icon_open || '';
+    }
+
+    get _icon_close() {
+        return this._config.icon_close || '';
+    }
+
+    get _open_service() {
+        return this._config.open_service || 'cover.open_cover';
+    }
+
+    get _close_service() {
+        return this._config.open_service || 'cover.close_cover';
+    }
+
+    get _stop_service() {
+        return this._config.open_service || 'cover.stop_cover';
+    }
+
+    get _auto_order() {
+        return this._config.auto_order || false;
+    }
+
+    render() {
+        if (!this.hass) {
+            return html``;
+        }
+
+        if (!this.listsUpdated) {
+            const formateList = item => ({
+                label: item,
+                value: item
+            });
+
+            this.allEntitiesList = Object.keys(this.hass.states).map(formateList);
+
+            this.lightList = Object.keys(this.hass.states).filter(
+                (eid) => eid.substr(0, eid.indexOf(".")) === "light"
+            ).map(formateList);
+
+            this.sensorList = Object.keys(this.hass.states).filter(
+                (eid) => eid.substr(0, eid.indexOf(".")) === "sensor"
+            ).map(formateList);
+            
+            this.binarySensorList = Object.keys(this.hass.states).filter(
+                (eid) => eid.substr(0, eid.indexOf(".")) === "binary_sensor"
+            ).map(formateList);
+
+            this.coverList = Object.keys(this.hass.states).filter(
+                (eid) => eid.substr(0, eid.indexOf(".")) === "cover"
+            ).map(formateList);
+
+            this.cardTypeList = [{
+                    'label': 'Button',
+                    'value': 'button'
+                },
+                {
+                    'label': 'Cover',
+                    'value': 'cover'
+                },
+                {
+                    'label': 'Empty column',
+                    'value': 'empty-column'
+                },
+                {
+                    'label': 'Horizontal buttons stack',
+                    'value': 'horizontal-buttons-stack'
+                },
+                {
+                    'label': 'Pop-up',
+                    'value': 'pop-up'
+                },
+                {
+                    'label': 'Separator',
+                    'value': 'separator'
+                }
+            ];
+
+            this.buttonTypeList = [{
+                    'label': 'Switch',
+                    'value': 'switch'
+                },
+                {
+                    'label': 'Slider',
+                    'value': 'slider'
+                }
+            ];
+
+            this.listsUpdated = true;
+        }
+
+        const allEntitiesList = this.allEntitiesList;
+        const lightList = this.lightList;
+        const sensorList = this.sensorList;
+        const coverList = this.coverList;
+        const cardTypeList = this.cardTypeList;
+        const buttonTypeList = this.buttonTypeList;
+
+        if (this._config.card_type === 'pop-up') {
+            return html`
+                <div class="card-config">
+                    ${this.makeDropdown("Card type", "card_type", cardTypeList)}
+                    <ha-alert alert-type="info">This card allows you to convert any vertical-stack into a pop-up. Each pop-up can be opened by targeting its link (e.g. '#pop-up-name'), with navigation_path or with the horizontal buttons stack that is included.<br><br>It must be placed within a vertical-stack card at the top most position to function properly.</ha-alert>
+                    <ha-textfield
+                        label="Hash (e.g. #kitchen)"
+                        .value="${this._hash}"
+                        .configValue="${"hash"}"
+                        @input="${this._valueChanged}"
+                        style="width: 100%;"
+                    ></ha-textfield>
+                    <ha-textfield
+                        label="Name"
+                        .value="${this._name}"
+                        .configValue="${"name"}"
+                        @input="${this._valueChanged}"
+                        style="width: 100%;"
+                    ></ha-textfield>
+                    ${this.makeDropdown("Icon", "icon")}
+                    ${this.makeDropdown("Entity to toggle (e.g. room light group)", "entity", allEntitiesList)}
+                    ${this.makeDropdown("Entity state to display (e.g. room temperature)", "state", allEntitiesList)}
+                    <ha-textfield
+                        label="Unit of measurement (e.g. °F, °C, %)"
+                        .value="${this._state_unit}"
+                        .configValue="${"state_unit"}"
+                        @input="${this._valueChanged}"
+                        style="width: 100%;"
+                    ></ha-textfield>
+                    <ha-textfield
+                        label="Width on desktop (100% by default on mobile)"
+                        .value="${this._width_desktop}"
+                        .configValue="${"width_desktop"}"
+                        @input="${this._valueChanged}"
+                        style="width: 100%;"
+                    ></ha-textfield>
+                    <ha-formfield .label="Is the sidebar hidden on desktop?">
+                        <ha-switch
+                            aria-label="Is the sidebar hidden on desktop?"
+                            .checked=${this._is_sidebar_hidden}
+                            .configValue="${"is_sidebar_hidden"}"
+                            @change=${this._valueChanged}
+                        ></ha-switch>
+                        <div class="mdc-form-field">
+                            <label class="mdc-label">Is the sidebar hidden on desktop?</label> 
+                        </div>
+                    </ha-formfield>
+                    <ha-textfield
+                        label="Top margin on mobile (e.g. -56px if your header is hidden)"
+                        .value="${this._margin_top_mobile}"
+                        .configValue="${"margin_top_mobile"}"
+                        @input="${this._valueChanged}"
+                        style="width: 100%;"
+                    ></ha-textfield>
+                    <ha-textfield
+                        label="Top margin on desktop (e.g. 50% for an half sized pop-up)"
+                        .value="${this._margin_top_desktop}"
+                        .configValue="${"margin_top_desktop"}"
+                        @input="${this._valueChanged}"
+                        style="width: 100%;"
+                    ></ha-textfield>
+                    ${this.makeVersion()}
+              </div>
+            `;
+        } else if (this._config.card_type === 'button') {
+            return html`
+                <div class="card-config">
+                    ${this.makeDropdown("Card type", "card_type", cardTypeList)}
+                    <ha-alert alert-type="info">This card can be a slider or a button, allowing you to toggle your entities, control the brightness of your lights and the volume of your media players. To access color / control of an entity, simply tap on the icon.</ha-alert>
+                    ${this.makeDropdown(this._button_type !== 'slider' ? "Entity (toggle)" : "Entity (light or media_player)", "entity", allEntitiesList)}
+                    ${this.makeDropdown("Button type", "button_type", buttonTypeList)}
+                    <ha-textfield
+                        label="Name"
+                        .value="${this._name}"
+                        .configValue="${"name"}"
+                        @input="${this._valueChanged}"
+                        style="width: 100%;"
+                    ></ha-textfield>
+                    ${this.makeDropdown("Icon", "icon")}
+                    ${this.makeVersion()}
+                </div>
+            `;
+        } else if (this._config.card_type === 'separator') {
+            return html`
+                <div class="card-config">
+                    ${this.makeDropdown("Card type", "card_type", cardTypeList)}
+                    <ha-alert alert-type="info">This card is a simple separator for dividing your pop-up into categories / sections. e.g. Lights, Devices, Covers, Settings, Automations...</ha-alert>
+                    <ha-textfield
+                        label="Name"
+                        .value="${this._name}"
+                        .configValue="${"name"}"
+                        @input="${this._valueChanged}"
+                        style="width: 100%;"
+                    ></ha-textfield>
+                    ${this.makeDropdown("Icon", "icon")}
+                    ${this.makeVersion()}
+              </div>
+            `;
+        } else if (this._config.card_type === 'horizontal-buttons-stack') {
+            if (!this.buttonAdded && this.shadowRoot.querySelector("#add-button")) {
+                const addButton = this.shadowRoot.querySelector("#add-button");
+
+                this.buttonIndex = 0;
+
+                while (this._config[(this.buttonIndex + 1) + '_link']) {
+                    this.buttonIndex++;
+                }
+
+                addButton.addEventListener("click", () => {
+                    this.buttonIndex++;
+                    fireEvent(this, "config-changed", {
+                        config: this._config
+                    });
+                });
+
+                this.buttonAdded = true;
+            }
+            fireEvent(this, "config-changed", {
+                config: this._config
+            });
+
+            return html`
+                <div class="card-config">
+                    ${this.makeDropdown("Card type", "card_type", cardTypeList)}
+                    <ha-alert alert-type="info">This card is the companion to the pop-up card, allowing you to open the corresponding pop-ups. It also allows you to open any page of your dashboard. In addition, you can add your motion sensors so that the order of the buttons adapts according to the room you just entered. This card is scrollable, remains visible and acts as a footer.<br><br>Please note that this card may take some time to load in edit mode.</ha-alert>
+                    <ha-formfield .label="Auto order">
+                        <ha-switch
+                            aria-label="Toggle auto order"
+                            .checked=${this._auto_order}
+                            .value=${this._auto_order}"
+                            .configValue="${"auto_order"}"
+                            @change=${this._valueChanged}
+                        ></ha-switch>
+                        <div class="mdc-form-field">
+                            <label class="mdc-label">Auto order (Presence/occupancy sensors needed)</label> 
+                        </div>
+                    </ha-formfield>
+                    <div id="buttons-container">
+                        ${this.makeButton()}
+                    </div>
+                    <button id="add-button">Add Button</button>
+                    ${this.makeVersion()}
+                </div>
+            `;
+        } else if (this._config.card_type === 'cover') {
+            return html`
+                <div class="card-config">
+                    ${this.makeDropdown("Card type", "card_type", cardTypeList)}
+                    <ha-alert alert-type="info">This card allows you to control your covers.</ha-alert>
+                    ${this.makeDropdown("Entity", "entity", coverList)}
+                    <ha-textfield
+                        label="Name"
+                        .value="${this._name || ''}"
+                        .configValue="${"name"}"
+                        @input="${this._valueChanged}"
+                        style="width: 100%;"
+                    ></ha-textfield>
+                    <ha-textfield
+                        label="Open service (cover.open_cover by default)"
+                        .value="${this._open_service}"
+                        .configValue="${"open_service"}"
+                        @input="${this._valueChanged}"
+                        style="width: 100%;"
+                    ></ha-textfield>
+                    <ha-textfield
+                        label="Stop service (cover.stop_cover by default)"
+                        .value="${this._stop_service}"
+                        .configValue="${"stop_service"}"
+                        @input="${this._valueChanged}"
+                        style="width: 100%;"
+                    ></ha-textfield>
+                    <ha-textfield
+                        label="Close service (cover.close_cover by default)"
+                        .value="${this._close_service}"
+                        .configValue="${"close_service"}"
+                        @input="${this._valueChanged}"
+                        style="width: 100%;"
+                    ></ha-textfield>
+                    ${this.makeDropdown("Open icon", "icon_open")}
+                    ${this.makeDropdown("Closed icon", "icon_close")}
+                    ${this.makeVersion()}
+                </div>
+            `;
+        } else if (this._config.card_type === 'empty-column') {
+            return html`
+                <div class="card-config">
+                    ${this.makeDropdown("Card type", "card_type", cardTypeList)}
+                    <ha-alert alert-type="info">Just an empty card to fill any empty column.</ha-alert>
+                    ${this.makeVersion()}
+                </div>
+            `;
+        } else if (!this._config.card_type) {
+            return html`
+                <div class="card-config">
+                    ${this.makeDropdown("Card type", "card_type", cardTypeList)}
+                    <ha-alert alert-type="info">You need to add a card type first.</ha-alert>
+                    ${this.makeVersion()}
+                </div>
+            `;
+        }
+    }
+
+    makeDropdown(label, configValue, items) {
+        const hass = this.hass;
+
+        if (label === 'Icon' || label === 'Open icon' || label === 'Closed icon') {
+            return html`
+                <div>
+                    <ha-icon-picker
+                        label="${label}"
+                        .value="${this['_' + configValue]}"
+                        .configValue="${configValue}"
+                        item-label-path="label"
+                        item-value-path="value"
+                        @value-changed="${this._valueChanged}"
+                    ></ha-icon-picker>
+                </div>
+            `;
+        } else {
+            return html`
+            <div>
+                <ha-combo-box
+                    label="${label}"
+                    .value="${this['_' + configValue]}"
+                    .configValue="${configValue}"
+                    .items="${items}"
+                    @value-changed="${this._valueChanged}"
+                ></ha-combo-box>
+            </div>
+          `;
+        }
+    }
+
+    makeButton() {
+        let buttons = [];
+        // const allEntitiesList = Object.keys(this.hass.states);
+        // const binarySensorList = Object.keys(this.hass.states).filter(
+        //     (eid) => eid.substr(0, eid.indexOf(".")) === "binary_sensor"
+        // );
+
+        for (let i = 1; i <= this.buttonIndex; i++) {
+            buttons.push(html`
+                <div class="${i}_button">
+                    <div class="button-header">
+                        <ha-icon class="remove-button" icon="mdi:close" @click=${() => this.removeButton(i)}></ha-icon>
+                        <span class="button-number">Button ${i}</span>
+                    </div>
+                    <ha-textfield
+                        label="Name"
+                        .value="${this._config[i + '_name']}"
+                        .configValue="${i}_name"
+                        @input="${this._valueChanged}"
+                        style="width: 100%;"
+                    ></ha-textfield>
+                    <ha-icon-picker
+                        label="Icon"
+                        .value="${this._config[i + '_icon']}"
+                        .configValue="${i}_icon"
+                        item-label-path="label"
+                        item-value-path="value"
+                        @value-changed="${this._valueChanged}"
+                    ></ha-icon-picker>
+                    <ha-textfield
+                        label="Link / Hash to pop-up (e.g. #kitchen)"
+                        .value="${this._config[i + '_link'] || ''}"
+                        .configValue="${i}_link"
+                        @input="${this._valueChanged}"
+                        style="width: 100%;"
+                    ></ha-textfield>
+                    <ha-combo-box
+                        label="Light / Light group (For background color)"
+                        .value="${this._config[i + '_entity']}"
+                        .configValue="${i}_entity"
+                        .items="${this.allEntitiesList}"
+                        @value-changed="${this._valueChanged}"
+                    ></ha-combo-box>
+                    <ha-combo-box
+                        label="Presence / Occupancy sensor (For button auto order)"
+                        .value="${this._config[i + '_pir_sensor']}"
+                        .configValue="${i}_pir_sensor"
+                        .disabled=${!this._config.auto_order}
+                        .items="${this.binarySensorList}"
+                        @value-changed="${this._valueChanged}"
+                    ></ha-combo-box>
+                </div>
+            `);
+        }
+        fireEvent(this, "config-changed", {
+            config: this._config
+        });
+        return buttons;
+    }
+    
+    makeVersion() {
+        return html`
+            <h4>Bubble Card <span style="font-size: 10px;">${version}</span></h4>
+        `;
+    }
+
+    removeButton(index) {
+        // Removing button fields
+        delete this._config[index + '_name'];
+        delete this._config[index + '_icon'];
+        delete this._config[index + '_link'];
+        delete this._config[index + '_entity'];
+        delete this._config[index + '_pir_sensor'];
+    
+        // Updating indexes of following buttons
+        for (let i = index; i < this.buttonIndex; i++) {
+            this._config[i + '_name'] = this._config[(i + 1) + '_name'];
+            this._config[i + '_icon'] = this._config[(i + 1) + '_icon'];
+            this._config[i + '_link'] = this._config[(i + 1) + '_link'];
+            this._config[i + '_entity'] = this._config[(i + 1) + '_entity'];
+            this._config[i + '_pir_sensor'] = this._config[(i + 1) + '_pir_sensor'];
+        }
+    
+        // Removing fields of the last button
+        delete this._config[this.buttonIndex + '_name'];
+        delete this._config[this.buttonIndex + '_icon'];
+        delete this._config[this.buttonIndex + '_link'];
+        delete this._config[this.buttonIndex + '_entity'];
+        delete this._config[this.buttonIndex + '_pir_sensor'];
+    
+        // Updating index of the last button
+        this.buttonIndex--;
+    
+        fireEvent(this, "config-changed", {
+            config: this._config
+        });
+    }
+
+    _valueChanged(ev) {
+        if (!this._config || !this.hass) {
+            return;
+        }
+        const target = ev.target;
+        const detail = ev.detail;
+        if (target.configValue) {
+            this._config = {
+                ...this._config,
+                [target.configValue]: target.checked !== undefined || !detail.value ? target.value || target.checked : target.checked || detail.value,
+                //   target.checked !== undefined || ev.detail.value ? target.checked || ev.detail.value : target.value || ev.detail.value,
+            }
+        }
+        fireEvent(this, "config-changed", {
+            config: this._config
+        });
+    }
+
+    static get styles() {
+        return css`
+      div {
+        display: grid;
+        grid-gap: 12px;
+      }
+      #add-button {
+        height: 32px;
+        border-radius: 16px;
+        border: none;
+        background-color: var(--accent-color);
+      }
+      .button-header {
+        height: auto;
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+
+      }
+      .button-number {
+        display: inline-flex;
+        width: auto;
+      }
+      .remove-button {
+        display: inline-flex;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        text-align: center;
+        line-height: 24px;
+        vertical-align: middle;
+        cursor: pointer;
+      }
+    `;
+    }
+}
+
+customElements.define('bubble-card-editor', BubbleCardEditor);
+window.customCards = window.customCards || [];
+window.customCards.push({
+    type: "bubble-card",
+    name: "Bubble Card",
+    preview: false,
+    description: "A minimalist card collection with a nice pop-up touch.",
+});
